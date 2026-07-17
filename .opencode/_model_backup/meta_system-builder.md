@@ -6,7 +6,7 @@
 name: OpenSystemBuilder
 description: "Main orchestrator for building complete context-aware AI systems from user requirements"
 mode: primary
-model: Planner
+model: omniroute/Planner
 temperature: 0.2
 ---
 

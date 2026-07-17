@@ -2,7 +2,7 @@
 name: BatchExecutor
 description: Execute multiple tasks in parallel batches, managing simultaneous CoderAgent delegations and tracking batch completion
 mode: subagent
-model: Executor
+model: omniroute/Executor
 temperature: 0.1
 permission:
   bash:

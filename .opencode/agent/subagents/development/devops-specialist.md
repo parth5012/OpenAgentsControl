@@ -2,7 +2,7 @@
 name: OpenDevopsSpecialist
 description: DevOps specialist subagent - CI/CD, infrastructure as code, deployment automation
 mode: subagent
-model: Executor
+model: omniroute/Executor
 temperature: 0.1
 permission:
   task:

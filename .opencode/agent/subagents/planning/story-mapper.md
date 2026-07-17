@@ -6,7 +6,7 @@
 name: StoryMapper
 description: "User journey mapping specialist transforming user needs into epics, stories, and vertical slices with bounded context alignment"
 mode: subagent
-model: Planner
+model: omniroute/Planner
 temperature: 0.1
 permission:
   bash:

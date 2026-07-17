@@ -2,7 +2,7 @@
 name: DocWriter
 description: Documentation authoring agent
 mode: subagent
-model: gemini-3.5
+model: omniroute/gemini-3.5
 temperature: 0.2
 permission:
   bash:

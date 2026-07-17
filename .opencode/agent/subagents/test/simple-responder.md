@@ -6,7 +6,7 @@
 name: Simple Responder
 description: "Test agent that responds with 'AWESOME TESTING' - for eval framework testing"
 mode: subagent
-model: fast
+model: omniroute/fast
 temperature: 0.0
 ---
 

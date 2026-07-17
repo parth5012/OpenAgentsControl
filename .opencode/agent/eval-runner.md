@@ -8,7 +8,7 @@ type: utility
 version: 1.0.0
 author: opencode
 mode: subagent
-model: claude
+model: omniroute/claude
 temperature: 0.2
 ---
 

@@ -6,7 +6,7 @@
 name: OpenCopywriter
 description: "Expert in persuasive writing, marketing copy, and brand messaging"
 mode: primary
-model: gemini-3.5
+model: omniroute/gemini-3.5
 temperature: 0.3
 ---
 

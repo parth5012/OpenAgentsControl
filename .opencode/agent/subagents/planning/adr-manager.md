@@ -2,7 +2,7 @@
 name: ADRManager
 description: Architecture Decision Record specialist capturing decisions, context, alternatives, and consequences in lightweight ADR format
 mode: subagent
-model: gemini-2.5
+model: omniroute/gemini-2.5
 temperature: 0.2
 permission:
   bash:

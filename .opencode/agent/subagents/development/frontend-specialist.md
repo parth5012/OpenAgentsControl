@@ -2,7 +2,7 @@
 name: OpenFrontendSpecialist
 description: Frontend UI design specialist - subagent for design systems, themes, animations
 mode: subagent
-model: Executor
+model: omniroute/Executor
 temperature: 0.2
 permission:
   task:

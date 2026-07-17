@@ -2,7 +2,7 @@
 name: CoderAgent
 description: Executes coding subtasks in sequence, ensuring completion as specified
 mode: subagent
-model: Executor
+model: omniroute/Executor
 temperature: 0
 permission:
   bash:

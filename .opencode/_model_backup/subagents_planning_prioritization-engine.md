@@ -2,7 +2,7 @@
 name: PrioritizationEngine
 description: Scores and prioritizes backlog items using RICE/WSJF frameworks with MVP/post-MVP release slicing
 mode: subagent
-model: gemini-3.5
+model: omniroute/gemini-3.5
 temperature: 0.1
 permission:
   bash:

@@ -2,7 +2,7 @@
 name: TaskManager
 description: JSON-driven task breakdown specialist transforming complex features into atomic, verifiable subtasks with dependency tracking and CLI integration
 mode: subagent
-model: Planner
+model: omniroute/Planner
 temperature: 0.1
 permission:
   bash:

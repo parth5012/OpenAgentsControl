@@ -2,7 +2,7 @@
 name: WorkflowDesigner
 description: Designs complete workflow definitions with context dependencies and success criteria
 mode: subagent
-model: Planner
+model: omniroute/Planner
 temperature: 0.1
 permission:
   task:

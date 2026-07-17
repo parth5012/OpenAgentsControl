@@ -2,7 +2,7 @@
 name: Context Retriever
 description: Generic context search and retrieval specialist for finding relevant context files, standards, and guides in any repository
 mode: subagent
-model: fast
+model: omniroute/fast
 temperature: 0.1
 permission:
   bash:

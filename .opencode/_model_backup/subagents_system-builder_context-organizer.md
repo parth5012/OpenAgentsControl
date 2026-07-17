@@ -2,7 +2,7 @@
 name: ContextOrganizer
 description: Organizes and generates context files (domain, processes, standards, templates) for optimal knowledge management
 mode: subagent
-model: fast
+model: omniroute/fast
 temperature: 0.1
 permission:
   task:

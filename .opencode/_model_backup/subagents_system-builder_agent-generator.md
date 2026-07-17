@@ -6,7 +6,7 @@
 name: AgentGenerator
 description: "Generates XML-optimized agent files (orchestrator and subagents) following research-backed patterns"
 mode: subagent
-model: claude
+model: omniroute/claude
 temperature: 0.1
 ---
 

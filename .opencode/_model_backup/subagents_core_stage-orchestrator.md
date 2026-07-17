@@ -2,7 +2,7 @@
 name: StageOrchestrator
 description: Multi-stage workflow orchestrator managing stage transitions, gating rules, validation, and rollback for complex feature development
 mode: subagent
-model: Planner
+model: omniroute/Planner
 temperature: 0.1
 permission:
   bash:

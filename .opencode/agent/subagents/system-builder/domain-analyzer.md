@@ -6,7 +6,7 @@
 name: DomainAnalyzer
 description: "Analyzes user domains to identify core concepts, recommended agents, and context structure"
 mode: subagent
-model: gemini-2.5
+model: omniroute/gemini-2.5
 temperature: 0.1
 ---
 

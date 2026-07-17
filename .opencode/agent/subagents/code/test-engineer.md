@@ -2,7 +2,7 @@
 name: TestEngineer
 description: Test authoring and TDD agent
 mode: subagent
-model: reviewer
+model: omniroute/reviewer
 temperature: 0.1
 permission:
   bash:

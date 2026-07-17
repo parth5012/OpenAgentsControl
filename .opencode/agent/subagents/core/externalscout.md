@@ -2,7 +2,7 @@
 name: ExternalScout
 description: Fetches live, version-specific documentation for external libraries and frameworks using Context7 and other sources. Filters, sorts, and returns relevant documentation.
 mode: subagent
-model: fast
+model: omniroute/fast
 temperature: 0.1
 permission:
   read:

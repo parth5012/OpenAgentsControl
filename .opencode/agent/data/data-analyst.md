@@ -2,7 +2,7 @@
 name: OpenDataAnalyst
 description: "Expert in data analysis, visualization, and statistical insights"
 mode: primary
-model: research
+model: omniroute/research
 temperature: 0.1
 ---
 

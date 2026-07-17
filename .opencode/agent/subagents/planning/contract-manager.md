@@ -2,7 +2,7 @@
 name: ContractManager
 description: API contract management specialist enabling parallel development through contract-first design with OpenAPI/Swagger support
 mode: subagent
-model: gemini-2.5
+model: omniroute/gemini-2.5
 temperature: 0.1
 permission:
   bash:

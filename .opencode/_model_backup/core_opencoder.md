@@ -2,7 +2,7 @@
 name: OpenCoder
 description: "Orchestration agent for complex coding, architecture, and multi-file refactoring"
 mode: primary
-model: Executor
+model: omniroute/Executor
 temperature: 0.1
 permission:
   question: "allow"

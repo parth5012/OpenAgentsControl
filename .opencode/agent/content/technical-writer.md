@@ -6,7 +6,7 @@
 name: OpenTechnicalWriter
 description: "Expert in documentation, API docs, and technical communication"
 mode: primary
-model: gemini-3.5
+model: omniroute/gemini-3.5
 temperature: 0.2
 ---
 

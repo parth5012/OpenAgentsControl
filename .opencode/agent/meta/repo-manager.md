@@ -2,7 +2,7 @@
 name: OpenRepoManager
 description: "Meta agent for managing OpenAgents Control repository development with lazy context loading, smart delegation, and automatic documentation"
 mode: primary
-model: agy
+model: omniroute/agy
 temperature: 0.2
 permission:
   bash:

@@ -2,7 +2,7 @@
 name: ContextManager
 description: Context organization and lifecycle management specialist - discovers, catalogs, validates, and maintains project context structure with dependency tracking
 mode: subagent
-model: fast
+model: omniroute/fast
 temperature: 0.1
 permission:
   read:

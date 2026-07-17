@@ -2,7 +2,7 @@
 name: BuildAgent
 description: Type check and build validation agent
 mode: subagent
-model: Executor
+model: omniroute/Executor
 temperature: 0.1
 permission:
   bash:

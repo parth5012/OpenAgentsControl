@@ -6,7 +6,7 @@
 name: CommandCreator
 description: "Creates custom slash commands that route to appropriate agents with clear syntax and examples"
 mode: subagent
-model: claude
+model: omniroute/claude
 temperature: 0.1
 ---
 

@@ -2,7 +2,7 @@
 name: ArchitectureAnalyzer
 description: DDD-driven architecture analyzer identifying bounded contexts, module boundaries, and domain relationships for multi-stage orchestration
 mode: subagent
-model: gemini-2.5
+model: omniroute/gemini-2.5
 temperature: 0.2
 permission:
   bash:

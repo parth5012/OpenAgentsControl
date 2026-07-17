@@ -6,7 +6,7 @@
 name: Image Specialist
 description: "Specialized agent for image editing and analysis using Gemini AI tools"
 mode: subagent
-model: gemini-3.5
+model: omniroute/gemini-3.5
 temperature: 0.2
 ---
 
