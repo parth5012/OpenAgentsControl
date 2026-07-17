@@ -313,17 +313,57 @@ The installer offers different profiles controlling which components are install
 
 Your `.opencode/config.json` routes all AI requests through OmniRoute (`localhost:20128`), giving you a single dashboard to manage models:
 
-| Model ID | Display Name | Use Case |
-|----------|-------------|----------|
-| `gemini-3.5` | gemini-3.5-flash(medium) | Fast, cheap tasks |
-| `gemini-2.5` | gemini-2.5-pro | Complex reasoning |
-| `claude` | opus-4.6(Thinking) | Deep analysis, architecture |
-| `groq/openai/gpt-oss-120b` | gpt-oss | Open-source alternative |
-| `groq/llama-3.3-70b-versatile` | llama-70b | Fast open-source |
-| `Planner` | Planner | Planning-specific routing |
-| `Executor` | Executor | Execution-specific routing |
-| `reviewer` | reviewer | Code review routing |
-| `agy` | agy | Current default (Antigravity) |
+| Combo ID | Display Name | Models (priority order) |
+|----------|-------------|------------------------|
+| `agy` | agy (General Purpose) | 3× agy/claude-opus-4-6-thinking (account rotation) → agy/gemini-3.5-flash-medium fallback |
+| `Planner` | Planner (Planning Only) | agy/gemini-3.5-flash-medium → agy/gemini-2.5-pro → kimi-coding/kimi-k2 |
+| `Executor` | Executor (Code Implementation) | 3× agy/claude-opus-4-6-thinking → agy/gemini-2.5-pro → agy/gemini-3.5-flash-medium |
+| `reviewer` | reviewer (Code Review) | agy/gemini-2.5-pro → agy/claude-opus-4-6-thinking → agy/gemini-3.5-flash-medium |
+| `gemini-3.5` | gemini-3.5-flash(medium) | 3× agy/gemini-3.5-flash-medium (account rotation) |
+| `gemini-2.5` | gemini-2.5-pro | 2× agy/gemini-2.5-pro → agy/claude-opus-4-6-thinking fallback |
+| `claude` | opus-4.6(Thinking) | 3× agy/claude-opus-4-6-thinking (account rotation) |
+| `fast` | fast (Minimum Latency) | 3× agy/gemini-3.5-flash-medium → kimi-coding/kimi-k2 |
+| `research` | research (Web/Research) | agy/gemini-2.5-pro → agy/gemini-3.5-flash-medium |
+| `kimi` | kimi (Kimi-specific) | kimi-coding/kimi-k2 → agy/gemini-3.5-flash-medium fallback |
+
+**Agent → Combo Mapping** (set via the `model:` field in each agent's frontmatter):
+
+| Agent | Combo | Role |
+|-------|--------|------|
+| OpenAgent | `agy` | Universal primary agent |
+| OpenRepoManager | `agy` | Repo/meta management |
+| OpenCoder | `Executor` | Primary coding/implementation |
+| OpenSystemBuilder | `Planner` | System architecture design |
+| OpenDataAnalyst | `research` | Data analysis + web research |
+| OpenCopywriter | `gemini-3.5` | Content writing (fast) |
+| OpenTechnicalWriter | `gemini-3.5` | Technical docs (fast) |
+| TaskManager | `Planner` | Feature breakdown/planning |
+| StageOrchestrator | `Planner` | Multi-stage orchestration |
+| StoryMapper | `Planner` | User journey mapping |
+| WorkflowDesigner | `Planner` | Workflow authoring |
+| BatchExecutor | `Executor` | Parallel batch execution |
+| CoderAgent | `Executor` | Individual code subtasks |
+| BuildAgent | `Executor` | Build validation |
+| OpenFrontendSpecialist | `Executor` | Frontend implementation |
+| OpenDevopsSpecialist | `Executor` | DevOps/infra tasks |
+| CodeReviewer | `reviewer` | Code review/security |
+| TestEngineer | `reviewer` | Test authoring/validation |
+| ADRManager | `gemini-2.5` | Architecture decision records |
+| ArchitectureAnalyzer | `gemini-2.5` | DDD architecture analysis |
+| ContractManager | `gemini-2.5` | API contract management |
+| DomainAnalyzer | `gemini-2.5` | Domain analysis |
+| PrioritizationEngine | `gemini-3.5` | Backlog prioritization |
+| DocWriter | `gemini-3.5` | Documentation generation |
+| Image Specialist | `gemini-3.5` | Image tasks |
+| AgentGenerator | `claude` | Agent file generation |
+| CommandCreator | `claude` | Slash command creation |
+| Eval Runner | `claude` | Test harness |
+| ContextScout | `fast` | Internal context discovery |
+| ExternalScout | `fast` | External doc fetching |
+| ContextManager | `fast` | Context lifecycle |
+| Context Retriever | `fast` | Context retrieval |
+| ContextOrganizer | `fast` | Context restructuring |
+| Simple Responder | `fast` | Simple test responses |
 
 Change per-agent models by editing the `model:` field in any agent's markdown frontmatter.
 

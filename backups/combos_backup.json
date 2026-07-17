@@ -1,0 +1,387 @@
+[
+  {
+    "id": "659cd404-a8da-488b-b26d-1880271ba54a",
+    "name": "Planner",
+    "data": {
+      "name": "Planner",
+      "models": [
+        {
+          "id": "planner-model-1-agy-claude-opus-4-6-thinking-c2987d9f-f93a-4a99-b74b-732a8e2ac2eb",
+          "kind": "model",
+          "model": "agy/claude-opus-4-6-thinking",
+          "providerId": "agy",
+          "weight": 0,
+          "label": "parthgdgoc@gmail.com"
+        },
+        {
+          "id": "planner-model-2-kr-claude-sonnet-4-5",
+          "kind": "model",
+          "model": "kr/claude-sonnet-4.5",
+          "providerId": "kr",
+          "weight": 0
+        },
+        {
+          "id": "planner-model-3-agy-gemini-3-5-flash-medium",
+          "kind": "model",
+          "model": "agy/gemini-3.5-flash-medium",
+          "providerId": "agy",
+          "weight": 0
+        },
+        {
+          "id": "planner-model-4-if-kimi-k2-thinking",
+          "kind": "model",
+          "model": "if/kimi-k2-thinking",
+          "providerId": "if",
+          "weight": 0
+        },
+        {
+          "id": "planner-model-5-if-qwen3-coder-plus",
+          "kind": "model",
+          "model": "if/qwen3-coder-plus",
+          "providerId": "if",
+          "weight": 0
+        },
+        {
+          "id": "planner-model-6-if-deepseek-v3-2",
+          "kind": "model",
+          "model": "if/deepseek-v3.2",
+          "providerId": "if",
+          "weight": 0
+        },
+        {
+          "id": "planner-model-7-nvidia-llama-3-3-70b-instruct",
+          "kind": "model",
+          "model": "nvidia/llama-3.3-70b-instruct",
+          "providerId": "nvidia",
+          "weight": 0
+        },
+        {
+          "id": "planner-model-8-groq-llama-3-3-70b-versatile",
+          "kind": "model",
+          "model": "groq/llama-3.3-70b-versatile",
+          "providerId": "groq",
+          "weight": 0
+        },
+        {
+          "id": "planner-model-9-opencode-nemotron-3-super-free",
+          "kind": "model",
+          "model": "opencode/nemotron-3-super-free",
+          "providerId": "opencode",
+          "weight": 0
+        }
+      ],
+      "strategy": "priority",
+      "config": {
+        "maxRetries": 3,
+        "retryDelayMs": 500,
+        "handoffThreshold": 0.85,
+        "handoffModel": "",
+        "maxMessagesForSummary": 30,
+        "trackMetrics": true,
+        "reasoningTokenBufferEnabled": true,
+        "zeroLatencyOptimizationsEnabled": false
+      },
+      "system_message": "You are the execution planner. Your only role is to analyze the objective and decompose it into a clear, logical sequence of discrete steps.\n\nInstructions:\n\n    Plan, do not execute: Do not write code, search the web, or attempt to complete the task yourself.\n\n    Be granular: Break complex actions into small, single-purpose operations.\n\n    Be sequential: Ensure each step logically follows the previous one.\n\nOutput your plan strictly as a plain text numbered list. Do not include conversational filler, summaries, or introductions.",
+      "id": "659cd404-a8da-488b-b26d-1880271ba54a",
+      "isHidden": false,
+      "sortOrder": 1,
+      "createdAt": "2026-07-17T06:11:11.802Z",
+      "updatedAt": "2026-07-17T07:35:57.550Z",
+      "version": 2,
+      "repairNote": "[db-health:2026-07-17T07:30:07.369Z] 1 missing connection pin(s) cleared."
+    },
+    "sort_order": 1
+  },
+  {
+    "id": "c5f2c89b-a410-4dd0-a25b-fe54b9ebbbc6",
+    "name": "Executor",
+    "data": {
+      "name": "Executor",
+      "models": [
+        {
+          "id": "executor-model-1-agy-gemini-3-5-flash-medium-c2987d9f-f93a-4a99-b74b-732a8e2ac2eb",
+          "kind": "model",
+          "model": "agy/gemini-3.5-flash-medium",
+          "providerId": "agy",
+          "weight": 0,
+          "label": "parthgdgoc@gmail.com"
+        },
+        {
+          "id": "executor-model-2-if-deepseek-v3-2",
+          "kind": "model",
+          "model": "if/deepseek-v3.2",
+          "providerId": "if",
+          "weight": 0
+        },
+        {
+          "id": "executor-model-3-nvidia-llama-3-3-70b-instruct",
+          "kind": "model",
+          "model": "nvidia/llama-3.3-70b-instruct",
+          "providerId": "nvidia",
+          "weight": 0
+        },
+        {
+          "id": "executor-model-4-groq-llama-3-3-70b-versatile",
+          "kind": "model",
+          "model": "groq/llama-3.3-70b-versatile",
+          "providerId": "groq",
+          "weight": 0
+        }
+      ],
+      "strategy": "priority",
+      "config": {
+        "maxRetries": 3,
+        "retryDelayMs": 500,
+        "handoffThreshold": 0.85,
+        "handoffModel": "",
+        "maxMessagesForSummary": 30,
+        "trackMetrics": true,
+        "reasoningTokenBufferEnabled": true,
+        "zeroLatencyOptimizationsEnabled": false
+      },
+      "id": "c5f2c89b-a410-4dd0-a25b-fe54b9ebbbc6",
+      "isHidden": false,
+      "sortOrder": 2,
+      "createdAt": "2026-07-17T06:18:32.407Z",
+      "updatedAt": "2026-07-17T07:30:07.369Z",
+      "version": 2,
+      "repairNote": "[db-health:2026-07-17T07:30:07.369Z] 1 missing connection pin(s) cleared."
+    },
+    "sort_order": 2
+  },
+  {
+    "id": "168cb4b0-8c31-4f99-82f4-0169b49a6c33",
+    "name": "reviewer",
+    "data": {
+      "name": "reviewer",
+      "models": [
+        {
+          "id": "reviewer-model-1-cu-claude-4-6-opus-high",
+          "kind": "model",
+          "model": "cu/claude-4.6-opus-high",
+          "providerId": "cu",
+          "weight": 0
+        },
+        {
+          "id": "reviewer-model-2-antigravity-claude-sonnet-4-6",
+          "kind": "model",
+          "model": "antigravity/claude-sonnet-4-6",
+          "providerId": "antigravity",
+          "weight": 0
+        },
+        {
+          "id": "reviewer-model-3-cu-claude-4-6-sonnet-high",
+          "kind": "model",
+          "model": "cu/claude-4.6-sonnet-high",
+          "providerId": "cu",
+          "weight": 0
+        },
+        {
+          "id": "reviewer-model-4-antigravity-gemini-3-1-pro-high",
+          "kind": "model",
+          "model": "antigravity/gemini-3.1-pro-high",
+          "providerId": "antigravity",
+          "weight": 0
+        },
+        {
+          "id": "reviewer-model-5-antigravity-gemini-3-pro-high",
+          "kind": "model",
+          "model": "antigravity/gemini-3-pro-high",
+          "providerId": "antigravity",
+          "weight": 0
+        },
+        {
+          "id": "reviewer-model-6-openrouter-anthropic-claude-fable-5-873cafcf-3792-4021-9dee-59dacf75712d",
+          "kind": "model",
+          "model": "openrouter/anthropic/claude-fable-5",
+          "providerId": "openrouter",
+          "connectionId": "873cafcf-3792-4021-9dee-59dacf75712d",
+          "weight": 0,
+          "label": "OpenRouter Primary"
+        }
+      ],
+      "strategy": "least-used",
+      "config": {
+        "maxRetries": 1,
+        "retryDelayMs": 1000,
+        "handoffThreshold": 0.85,
+        "handoffModel": "",
+        "maxMessagesForSummary": 30,
+        "trackMetrics": true,
+        "reasoningTokenBufferEnabled": true,
+        "zeroLatencyOptimizationsEnabled": false
+      },
+      "system_message": "Review the implemented code against desired steps and give feedback of improvements and fixations",
+      "id": "168cb4b0-8c31-4f99-82f4-0169b49a6c33",
+      "isHidden": false,
+      "sortOrder": 3,
+      "createdAt": "2026-07-17T06:20:47.329Z",
+      "updatedAt": "2026-07-17T06:20:47.329Z",
+      "version": 2
+    },
+    "sort_order": 3
+  },
+  {
+    "id": "2e2b93fb-ff76-4f23-b3e1-1bdaf89a2f6c",
+    "name": "agy",
+    "data": {
+      "name": "agy",
+      "models": [
+        {
+          "id": "agy-model-1-agy-claude-opus-4-6-thinking-c2987d9f-f93a-4a99-b74b-732a8e2ac2eb",
+          "kind": "model",
+          "model": "agy/claude-opus-4-6-thinking",
+          "providerId": "agy",
+          "weight": 0,
+          "label": "parthgdgoc@gmail.com"
+        },
+        {
+          "id": "agy-model-2-agy-gemini-3-5-flash-medium-c2987d9f-f93a-4a99-b74b-732a8e2ac2eb",
+          "kind": "model",
+          "model": "agy/gemini-3.5-flash-medium",
+          "providerId": "agy",
+          "weight": 0,
+          "label": "parthgdgoc@gmail.com"
+        },
+        {
+          "id": "agy-model-3-grok-cli-grok-composer-2-5-fast-44a2d162-3258-4a5d-b59e-e02e43b9f32b",
+          "kind": "model",
+          "model": "grok-cli/grok-composer-2.5-fast",
+          "providerId": "grok-cli",
+          "weight": 0,
+          "label": "Account #44a2d1"
+        },
+        {
+          "id": "agy-model-4-openrouter-openrouter-free-873cafcf-3792-4021-9dee-59dacf75712d",
+          "kind": "model",
+          "model": "openrouter/openrouter/free",
+          "providerId": "openrouter",
+          "connectionId": "873cafcf-3792-4021-9dee-59dacf75712d",
+          "weight": 0,
+          "label": "OpenRouter Primary"
+        }
+      ],
+      "strategy": "priority",
+      "config": {
+        "maxRetries": 1,
+        "retryDelayMs": 2000,
+        "handoffThreshold": 0.85,
+        "handoffModel": "",
+        "maxMessagesForSummary": 30,
+        "trackMetrics": true,
+        "reasoningTokenBufferEnabled": true,
+        "zeroLatencyOptimizationsEnabled": false
+      },
+      "id": "2e2b93fb-ff76-4f23-b3e1-1bdaf89a2f6c",
+      "isHidden": false,
+      "sortOrder": 4,
+      "createdAt": "2026-07-17T06:35:59.810Z",
+      "updatedAt": "2026-07-17T07:30:07.369Z",
+      "version": 2,
+      "repairNote": "[db-health:2026-07-17T07:30:07.369Z] 3 missing connection pin(s) cleared."
+    },
+    "sort_order": 4
+  },
+  {
+    "id": "f63ab561-6c51-4090-8789-1b9be526868e",
+    "name": "gemini-3.5",
+    "data": {
+      "name": "gemini-3.5",
+      "models": [
+        {
+          "id": "gemini-3-5-model-1-agy-gemini-3-5-flash-medium",
+          "kind": "model",
+          "model": "agy/gemini-3.5-flash-medium",
+          "providerId": "agy",
+          "weight": 0
+        }
+      ],
+      "strategy": "priority",
+      "config": {
+        "maxRetries": 1,
+        "retryDelayMs": 2000,
+        "handoffThreshold": 0.85,
+        "handoffModel": "",
+        "maxMessagesForSummary": 30,
+        "trackMetrics": true,
+        "reasoningTokenBufferEnabled": true,
+        "zeroLatencyOptimizationsEnabled": false
+      },
+      "id": "f63ab561-6c51-4090-8789-1b9be526868e",
+      "isHidden": false,
+      "sortOrder": 5,
+      "createdAt": "2026-07-17T11:08:53.109Z",
+      "updatedAt": "2026-07-17T11:08:53.109Z",
+      "version": 2
+    },
+    "sort_order": 5
+  },
+  {
+    "id": "218cd96b-9e51-47ea-87df-5db69b2eddad",
+    "name": "gemini-2.5",
+    "data": {
+      "name": "gemini-2.5",
+      "models": [
+        {
+          "id": "gemini-2-5-model-1-agy-gemini-2-5-pro",
+          "kind": "model",
+          "model": "agy/gemini-2.5-pro",
+          "providerId": "agy",
+          "weight": 0
+        }
+      ],
+      "strategy": "priority",
+      "config": {
+        "maxRetries": 1,
+        "retryDelayMs": 2000,
+        "handoffThreshold": 0.85,
+        "handoffModel": "",
+        "maxMessagesForSummary": 30,
+        "trackMetrics": true,
+        "reasoningTokenBufferEnabled": true,
+        "zeroLatencyOptimizationsEnabled": false
+      },
+      "id": "218cd96b-9e51-47ea-87df-5db69b2eddad",
+      "isHidden": false,
+      "sortOrder": 6,
+      "createdAt": "2026-07-17T11:10:12.573Z",
+      "updatedAt": "2026-07-17T11:10:12.573Z",
+      "version": 2
+    },
+    "sort_order": 6
+  },
+  {
+    "id": "8a1943e6-2f24-443c-b75f-6abb86505e52",
+    "name": "claude",
+    "data": {
+      "name": "claude",
+      "models": [
+        {
+          "id": "claude-model-1-agy-claude-opus-4-6-thinking",
+          "kind": "model",
+          "model": "agy/claude-opus-4-6-thinking",
+          "providerId": "agy",
+          "weight": 0
+        }
+      ],
+      "strategy": "priority",
+      "config": {
+        "maxRetries": 1,
+        "retryDelayMs": 2000,
+        "handoffThreshold": 0.85,
+        "handoffModel": "",
+        "maxMessagesForSummary": 30,
+        "trackMetrics": true,
+        "reasoningTokenBufferEnabled": true,
+        "zeroLatencyOptimizationsEnabled": false
+      },
+      "id": "8a1943e6-2f24-443c-b75f-6abb86505e52",
+      "isHidden": false,
+      "sortOrder": 7,
+      "createdAt": "2026-07-17T11:11:06.616Z",
+      "updatedAt": "2026-07-17T11:11:06.616Z",
+      "version": 2
+    },
+    "sort_order": 7
+  }
+]

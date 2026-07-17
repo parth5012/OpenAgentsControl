@@ -9,6 +9,18 @@
         "apiKey": "sk-bfb9d6bd87e091aa-09a262-e558e792"
       },
       "models": {
+        "agy": {
+          "name": "agy (General Purpose)"
+        },
+        "Planner": {
+          "name": "Planner (Planning Only)"
+        },
+        "Executor": {
+          "name": "Executor (Code Implementation)"
+        },
+        "reviewer": {
+          "name": "reviewer (Code Review)"
+        },
         "gemini-3.5": {
           "name": "gemini-3.5-flash(medium)"
         },
@@ -18,32 +30,14 @@
         "claude": {
           "name": "opus-4.6(Thinking)"
         },
-        "groq/openai/gpt-oss-120b": {
-          "name": "gpt-oss"
+        "fast": {
+          "name": "fast (Minimum Latency)"
         },
-        "groq/llama-3.3-70b-versatile": {
-          "name": "llama-70b"
+        "research": {
+          "name": "research (Web/Research)"
         },
-        "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free": {
-          "name": "nemotron-3-ultra"
-        },
-        "Planner": {
-          "name": "Planner"
-        },
-        "Executor": {
-          "name": "Executor"
-        },
-        "reviewer": {
-          "name": "reviewer"
-        },
-        "agy": {
-          "name": "agy"
-        },
-        "veo-free/veo": {
-          "name": "veo"
-        },
-        "kc/openrouter/free": {
-          "name": "kilocode"
+        "kimi": {
+          "name": "kimi (Kimi-specific)"
         }
       }
     }
