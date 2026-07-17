@@ -1,3 +1,51 @@
 {
-  "$schema": "https://opencode.ai/config.json"
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "omniroute": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OmniRoute",
+      "options": {
+        "baseURL": "http://localhost:20128/v1",
+        "apiKey": "sk-bfb9d6bd87e091aa-09a262-e558e792"
+      },
+      "models": {
+        "gemini-3.5": {
+          "name": "gemini-3.5-flash(medium)"
+        },
+        "gemini-2.5": {
+          "name": "gemini-2.5-pro"
+        },
+        "claude": {
+          "name": "opus-4.6(Thinking)"
+        },
+        "groq/openai/gpt-oss-120b": {
+          "name": "gpt-oss"
+        },
+        "groq/llama-3.3-70b-versatile": {
+          "name": "llama-70b"
+        },
+        "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free": {
+          "name": "nemotron-3-ultra"
+        },
+        "Planner": {
+          "name": "Planner"
+        },
+        "Executor": {
+          "name": "Executor"
+        },
+        "reviewer":{
+          "name": "reviewer"
+        },
+        "agy": {
+          "name": "agy"
+        },
+        "veo-free/veo": {
+          "name": "veo"
+        },
+        "kc/openrouter/free": {
+          "name": "kilocode"
+        }
+      }
+    }
+  }
 }
