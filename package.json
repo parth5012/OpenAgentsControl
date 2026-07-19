@@ -40,6 +40,8 @@
     "node": ">=18.0.0"
   },
   "scripts": {
+    "lint": "cd evals/framework && npm run lint",
+    "build": "cd evals/framework && npm run build",
     "test": "npm run test:all",
     "test:all": "cd evals/framework && npm run eval:sdk",
     "test:core": "npm run test:openagent:core",
