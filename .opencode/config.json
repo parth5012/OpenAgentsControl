@@ -38,6 +38,9 @@
         },
         "kimi": {
           "name": "kimi (Kimi-specific)"
+        },
+        "free":{
+          "name": "free models"
         }
       }
     }

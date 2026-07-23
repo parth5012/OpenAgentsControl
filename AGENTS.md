@@ -4,7 +4,7 @@
 This is a general-purpose agent environment. The coding agent should follow these rules and practices when executing tasks.
 
 ## Code & File Operations
-- **Understand First**: Always read relevant codebase files (`read`, `glob`, `grep`) before making or planning any modifications.
+- **Understand First**: Always check if the project has graphify setup before trying to read relevant codebase files (`read`, `glob`, `grep`).
 - **Minimal Changes**: Make the smallest possible changes required to achieve the goal correctly. Avoid refactoring unrelated code.
 - **Code Style**: Follow the style, indentation, naming conventions, and file structures of the existing codebase.
 - **Systematic Fixes**: When fixing bugs, analyze the logs or test errors, locate the root cause, apply the fix, and re-run verification.

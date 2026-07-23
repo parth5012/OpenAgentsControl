@@ -38,8 +38,14 @@
         },
         "kimi": {
           "name": "kimi (Kimi-specific)"
+        },
+        "flash": {
+          "name": "flash (Gemini-2.5-flash)"
         }
       }
     }
-  }
+  },
+  "plugin": [
+    "./plugins/claude-mem.js"
+  ]
 }
