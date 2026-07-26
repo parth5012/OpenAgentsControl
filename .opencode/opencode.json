@@ -46,6 +46,7 @@
     }
   },
   "plugin": [
-    "./plugins/claude-mem.js"
+    "./plugins/claude-mem.js",
+    "./plugins/graphify.js"
   ]
 }

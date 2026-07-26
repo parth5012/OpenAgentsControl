@@ -10,7 +10,11 @@
       "type": "agent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["universal", "coordination", "primary"],
+      "tags": [
+        "universal",
+        "coordination",
+        "primary"
+      ],
       "dependencies": [
         "subagent:task-manager",
         "subagent:batch-executor",
@@ -32,7 +36,11 @@
       "type": "agent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["development", "coding", "implementation"],
+      "tags": [
+        "development",
+        "coding",
+        "implementation"
+      ],
       "dependencies": [
         "subagent:documentation",
         "subagent:task-manager",
@@ -56,7 +64,11 @@
       "type": "agent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["repository", "management", "orchestration"],
+      "tags": [
+        "repository",
+        "management",
+        "orchestration"
+      ],
       "dependencies": [
         "subagent:task-manager",
         "subagent:contextscout",
@@ -74,7 +86,11 @@
       "type": "agent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["system-generation", "architecture", "scaffolding"],
+      "tags": [
+        "system-generation",
+        "architecture",
+        "scaffolding"
+      ],
       "dependencies": [
         "subagent:agent-generator",
         "subagent:command-creator",
@@ -90,7 +106,11 @@
       "type": "agent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["content", "marketing", "writing"],
+      "tags": [
+        "content",
+        "marketing",
+        "writing"
+      ],
       "dependencies": [
         "context:standards-docs"
       ]
@@ -102,7 +122,11 @@
       "type": "agent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["documentation", "technical", "writing"],
+      "tags": [
+        "documentation",
+        "technical",
+        "writing"
+      ],
       "dependencies": [
         "context:standards-docs"
       ]
@@ -114,7 +138,11 @@
       "type": "agent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["data", "analysis", "visualization"],
+      "tags": [
+        "data",
+        "analysis",
+        "visualization"
+      ],
       "dependencies": []
     },
     "eval-runner": {
@@ -124,7 +152,11 @@
       "type": "agent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["testing", "evaluation", "quality"],
+      "tags": [
+        "testing",
+        "evaluation",
+        "quality"
+      ],
       "dependencies": [
         "context:standards-tests"
       ]
@@ -136,7 +168,11 @@
       "type": "subagent",
       "version": "2.0.0",
       "author": "opencode",
-      "tags": ["task-breakdown", "planning", "coordination"],
+      "tags": [
+        "task-breakdown",
+        "planning",
+        "coordination"
+      ],
       "dependencies": [
         "context:task-delegation-basics"
       ]
@@ -148,7 +184,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["parallel-execution", "batch-management", "coordination"],
+      "tags": [
+        "parallel-execution",
+        "batch-management",
+        "coordination"
+      ],
       "dependencies": [
         "subagent:coder-agent",
         "subagent:task-manager"
@@ -161,7 +201,10 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["documentation", "writing"],
+      "tags": [
+        "documentation",
+        "writing"
+      ],
       "dependencies": [
         "context:standards-docs"
       ]
@@ -173,7 +216,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["context", "discovery", "search"],
+      "tags": [
+        "context",
+        "discovery",
+        "search"
+      ],
       "dependencies": []
     },
     "externalscout": {
@@ -183,7 +230,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["external", "documentation", "search"],
+      "tags": [
+        "external",
+        "documentation",
+        "search"
+      ],
       "dependencies": []
     },
     "context-manager": {
@@ -193,7 +244,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["context", "management", "organization"],
+      "tags": [
+        "context",
+        "management",
+        "organization"
+      ],
       "dependencies": []
     },
     "context-retriever": {
@@ -203,7 +258,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["context", "retrieval", "search"],
+      "tags": [
+        "context",
+        "retrieval",
+        "search"
+      ],
       "dependencies": []
     },
     "coder-agent": {
@@ -213,7 +272,10 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["coding", "implementation"],
+      "tags": [
+        "coding",
+        "implementation"
+      ],
       "dependencies": [
         "context:standards-code"
       ]
@@ -225,7 +287,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["testing", "tdd", "quality"],
+      "tags": [
+        "testing",
+        "tdd",
+        "quality"
+      ],
       "dependencies": [
         "context:standards-tests"
       ]
@@ -237,7 +303,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["review", "security", "quality"],
+      "tags": [
+        "review",
+        "security",
+        "quality"
+      ],
       "dependencies": [
         "context:standards-code",
         "context:review-ref"
@@ -250,7 +320,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["build", "validation", "type-checking"],
+      "tags": [
+        "build",
+        "validation",
+        "type-checking"
+      ],
       "dependencies": []
     },
     "frontend-specialist": {
@@ -260,7 +334,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["frontend", "ui", "design"],
+      "tags": [
+        "frontend",
+        "ui",
+        "design"
+      ],
       "dependencies": [
         "context:standards-code"
       ]
@@ -272,7 +350,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["devops", "ci-cd", "infrastructure"],
+      "tags": [
+        "devops",
+        "ci-cd",
+        "infrastructure"
+      ],
       "dependencies": []
     },
     "agent-generator": {
@@ -282,7 +364,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["generation", "agents", "scaffolding"],
+      "tags": [
+        "generation",
+        "agents",
+        "scaffolding"
+      ],
       "dependencies": []
     },
     "command-creator": {
@@ -292,7 +378,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["commands", "generation", "scaffolding"],
+      "tags": [
+        "commands",
+        "generation",
+        "scaffolding"
+      ],
       "dependencies": []
     },
     "domain-analyzer": {
@@ -302,7 +392,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["analysis", "domain", "architecture"],
+      "tags": [
+        "analysis",
+        "domain",
+        "architecture"
+      ],
       "dependencies": []
     },
     "context-organizer": {
@@ -312,7 +406,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["context", "organization", "structure"],
+      "tags": [
+        "context",
+        "organization",
+        "structure"
+      ],
       "dependencies": []
     },
     "workflow-designer": {
@@ -322,7 +420,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["workflow", "design", "architecture"],
+      "tags": [
+        "workflow",
+        "design",
+        "architecture"
+      ],
       "dependencies": []
     },
     "image-specialist": {
@@ -332,7 +434,11 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["images", "editing", "generation"],
+      "tags": [
+        "images",
+        "editing",
+        "generation"
+      ],
       "dependencies": []
     },
     "simple-responder": {
@@ -342,7 +448,130 @@
       "type": "subagent",
       "version": "1.0.0",
       "author": "opencode",
-      "tags": ["testing", "evaluation"],
+      "tags": [
+        "testing",
+        "evaluation"
+      ],
+      "dependencies": []
+    },
+    "software-factory": {
+      "id": "software-factory",
+      "name": "SoftwareFactory",
+      "category": "core",
+      "type": "agent",
+      "version": "1.0.0",
+      "author": "opencode",
+      "tags": [
+        "software-factory",
+        "orchestration",
+        "development"
+      ],
+      "dependencies": [
+        "subagent:software-factory/researcher",
+        "subagent:software-factory/story-writer",
+        "subagent:software-factory/technical-blueprint",
+        "subagent:software-factory/backend-engineer",
+        "subagent:software-factory/frontend-engineer",
+        "subagent:software-factory/e2e-verifier",
+        "subagent:software-factory/validator"
+      ]
+    },
+    "software-factory/researcher": {
+      "id": "software-factory/researcher",
+      "name": "Researcher",
+      "category": "subagents/software-factory",
+      "type": "subagent",
+      "version": "1.0.0",
+      "author": "opencode",
+      "tags": [
+        "research",
+        "codebase",
+        "read-only"
+      ],
+      "dependencies": []
+    },
+    "software-factory/story-writer": {
+      "id": "software-factory/story-writer",
+      "name": "StoryWriter",
+      "category": "subagents/software-factory",
+      "type": "subagent",
+      "version": "1.0.0",
+      "author": "opencode",
+      "tags": [
+        "requirements",
+        "user-story",
+        "specification"
+      ],
+      "dependencies": []
+    },
+    "software-factory/technical-blueprint": {
+      "id": "software-factory/technical-blueprint",
+      "name": "TechnicalBlueprint",
+      "category": "subagents/software-factory",
+      "type": "subagent",
+      "version": "1.0.0",
+      "author": "opencode",
+      "tags": [
+        "blueprint",
+        "architecture",
+        "design"
+      ],
+      "dependencies": []
+    },
+    "software-factory/backend-engineer": {
+      "id": "software-factory/backend-engineer",
+      "name": "BackendEngineer",
+      "category": "subagents/software-factory",
+      "type": "subagent",
+      "version": "1.0.0",
+      "author": "opencode",
+      "tags": [
+        "backend",
+        "api",
+        "database"
+      ],
+      "dependencies": []
+    },
+    "software-factory/frontend-engineer": {
+      "id": "software-factory/frontend-engineer",
+      "name": "FrontendEngineer",
+      "category": "subagents/software-factory",
+      "type": "subagent",
+      "version": "1.0.0",
+      "author": "opencode",
+      "tags": [
+        "frontend",
+        "ui",
+        "components"
+      ],
+      "dependencies": []
+    },
+    "software-factory/e2e-verifier": {
+      "id": "software-factory/e2e-verifier",
+      "name": "E2EVerifier",
+      "category": "subagents/software-factory",
+      "type": "subagent",
+      "version": "1.0.0",
+      "author": "opencode",
+      "tags": [
+        "testing",
+        "e2e",
+        "verification"
+      ],
+      "dependencies": []
+    },
+    "software-factory/validator": {
+      "id": "software-factory/validator",
+      "name": "Validator",
+      "category": "subagents/software-factory",
+      "type": "subagent",
+      "version": "1.0.0",
+      "author": "opencode",
+      "tags": [
+        "validation",
+        "compliance",
+        "audit"
+      ],
       "dependencies": []
     }
   },
