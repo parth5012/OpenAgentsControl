@@ -2,7 +2,6 @@
 name: ship-reviewer
 description: Ship pipeline Reviewer — reviews implementation and test quality for correctness, security, and standards compliance
 mode: subagent
-model: omniroute/reviewer
 temperature: 0.1
 permission:
   bash:

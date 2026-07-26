@@ -2,7 +2,6 @@
 name: ship-coder
 description: Ship pipeline Coder — implements feature code from the Planner's plan
 mode: subagent
-model: omniroute/Executor
 temperature: 0.1
 permission:
   bash:

@@ -2,7 +2,6 @@
 name: ship-planner
 description: Ship pipeline Planner — decomposes feature requests into a concrete implementation plan with file list, data flow, and acceptance criteria
 mode: subagent
-model: omniroute/Planner
 temperature: 0.2
 permission:
   bash:

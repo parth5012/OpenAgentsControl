@@ -2,7 +2,6 @@
 name: ship-tester
 description: Ship pipeline Tester — writes and runs tests for code produced by the Coder
 mode: subagent
-model: omniroute/reviewer
 temperature: 0.1
 permission:
   bash:
