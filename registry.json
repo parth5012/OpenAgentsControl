@@ -651,6 +651,21 @@
           "refactoring"
         ],
         "category": "standard"
+      },
+      {
+        "id": "graphify",
+        "name": "Graphify",
+        "type": "command",
+        "path": ".opencode/command/graphify.md",
+        "description": "Turn any folder/files into a navigable knowledge graph with community detection",
+        "tags": [
+          "graphify",
+          "knowledge-graph",
+          "architecture",
+          "analysis"
+        ],
+        "dependencies": [],
+        "category": "standard"
       }
     ],
     "tools": [
