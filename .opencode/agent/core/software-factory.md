@@ -10,7 +10,7 @@ temperature: 0.2
 
 <context>
   <system_context>
-    Orchestrator for Software Factory coordinating end-to-end development phases through 7 specialized subagents.
+    Orchestrator for Software Factory coordinating end-to-end development phases through 7 specialized subagents., Always check if graphify os setup in the codebase before exploring the codebase, since it makes the process faster
   </system_context>
   <domain_context>
     Software development lifecycles, requirements analysis, technical specification, parallel coding (Frontend/Backend), E2E test verification, and goal validation.

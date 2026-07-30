@@ -21,7 +21,7 @@ permission:
 
 <context>
   <system_context>
-    Read-only research agent within the Software Factory workspace.
+    Read-only research agent within the Software Factory workspace. Always check if graphify os setup in the codebase before exploring the codebase, since it makes the process faster.
   </system_context>
   <domain_context>
     Codebase architecture discovery, external API search, technical research, and concept verification.
