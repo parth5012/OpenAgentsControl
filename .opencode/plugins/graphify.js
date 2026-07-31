@@ -14,13 +14,25 @@ export const GraphifyPlugin = async ({ directory }) => {
 
   return {
     "tool.execute.before": async (input, output) => {
-      if (reminded) return;
+      // 1. If the graph doesn't exist, let the agent use grep/glob normally
       if (!existsSync(join(directory, "graphify-out", "graph.json"))) return;
 
-      if (input.tool === "bash") {
-        output.args.command =
-          'echo "[graphify] knowledge graph exists in graphify-out/. For focused questions, run graphify query \\"<question>\\" (scoped subgraph, much smaller than GRAPH_REPORT.md) instead of grepping raw files. Read GRAPH_REPORT.md only for broad architecture context." && ' +
-          output.args.command;
+      // 2. BLOCK grep and glob entirely
+      if (input.tool === "grep" || input.tool === "glob") {
+        // Throwing an error cancels the tool execution and sends this exact
+        // message back to the agent so it knows how to fix its mistake.
+        throw new Error(
+          `[graphify instruction] Do not use the '${input.tool}' tool. ` +
+          `A knowledge graph exists at graphify-out/. Please use the 'bash' tool ` +
+          `to run: graphify query "<your question>"`
+        );
+      }
+
+      // 3. Keep the gentle reminder for regular bash commands (only once)
+      if (input.tool === "bash" && !reminded) {
+        const reminderMsg = 'echo "[graphify] knowledge graph at graphify-out/. For focused questions, run graphify query with your question (scoped subgraph, usually much smaller than GRAPH_REPORT.md) instead of grepping raw files. Read GRAPH_REPORT.md only for broad architecture context."';
+
+        output.args.command = `${reminderMsg} && ${output.args.command}`;
         reminded = true;
       }
     },
