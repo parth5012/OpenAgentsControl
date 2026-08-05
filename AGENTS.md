@@ -19,4 +19,21 @@ This is a general-purpose agent environment. The coding agent should follow thes
 - Test all changes before declaring a task complete.
 - Ensure linting, compilation, and any existing test suites pass successfully.
 
+## Wayfinder Runner
+
+When a wayfinder map exists and you want to process all tickets in one session:
+
+1. Invoke the `wayfinder-runner` skill: `/wayfinder-runner <map-number>`
+2. Two-phase flow:
+   - **Phase 1 (HITL):** prototype/grilling/HITL-task tickets are processed with the human present. Agent assists, human decides.
+   - **Phase 2 (AFK):** once all HITL tickets are resolved, autonomous agents run research/task tickets unattended.
+3. Each ticket gets its own agent dispatch with full context from the map
+4. Code changes trigger a CodeReviewer sub-agent before recording resolution
+5. Human can leave after Phase 1 — Phase 2 runs to completion
+
+**Pattern:**
+```
+Task(subagent_type="general", prompt="/wayfinder-runner <map-number>")
+```
+
 While responding the user ,Be extremely concise and sacrifice grammar for the sake of concision.
