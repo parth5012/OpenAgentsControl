@@ -48,5 +48,11 @@
   "plugin": [
     "./plugins/claude-mem.js",
     "./plugins/graphify.js"
-  ]
+  ],
+  "permission": {
+    "external_directory": {
+      "D:/notes/raw/chats/**": "allow",
+      "D:/work/projects/OpenCode Setup/.opencode/**": "allow"
+    }
+  }
 }
