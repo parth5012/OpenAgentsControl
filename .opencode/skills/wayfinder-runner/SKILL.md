@@ -2,7 +2,6 @@
 name: wayfinder-runner
 description: "Auto-run wayfinder map tickets end-to-end. Phase 1: HITL tickets (prototype/grilling) are processed with the human present. Phase 2: AFK tickets run autonomously while human is free. Human leaves after Phase 1; agents finish the rest."
 ---
-
 # Wayfinder Runner
 
 A two-phase agentic loop that drives a wayfinder map to completion. **HITL work happens first** while you're present. **AFK work runs autonomously** after you leave.
@@ -15,12 +14,14 @@ A two-phase agentic loop that drives a wayfinder map to completion. **HITL work 
 
 ## Ticket types recap (from wayfinder)
 
-| Type | Mode | Strategy |
-|------|------|----------|
-| `research` | AFK | spawn research agent |
-| `task` | AFK or HITL | AFK → spawn coder agent; HITL → Phase 1 with human |
-| `prototype` | HITL | Phase 1 with human |
-| `grilling` | HITL | Phase 1 with human |
+
+| Type        | Mode        | Strategy                                           |
+| ----------- | ----------- | -------------------------------------------------- |
+| `research`  | AFK         | spawn research agent                               |
+| `task`      | AFK or HITL | AFK → spawn coder agent; HITL → Phase 1 with human |
+| `prototype` | HITL        | Phase 1 with human                                 |
+| `grilling`  | HITL        | Phase 1 with human                                 |
+
 
 ## Two-phase workflow
 
@@ -98,6 +99,7 @@ gh issue view <MAP_NUMBER> --json number,title,body,labels
 ```
 
 The map body contains:
+
 - `## Destination` — orient every action against this
 - `## Notes` — skills to consult
 - `## Decisions so far` — closed tickets (context for new work)
@@ -113,18 +115,20 @@ If the tracker doesn't support parent queries, grep child issue links from the m
 ### Step 2 — Compute the frontier
 
 For each open child ticket:
+
 1. Read full body
 2. Check blocking edges
 3. A ticket is in the frontier if:
-   - state = open
-   - all tickets blocking it are closed
-   - assignee is null (unclaimed)
+  - state = open
+  - all tickets blocking it are closed
+  - assignee is null (unclaimed)
 
 Topo-sort: tickets with no unresolved blockers first.
 
 ### Step 3 — Phase 1: HITL (human present)
 
 Classify each frontier ticket:
+
 - `wayfinder:research` → AFK (skip, Phase 2)
 - `wayfinder:task` + AFK marker → AFK (skip, Phase 2)
 - `wayfinder:prototype` → HITL (process now)
@@ -144,18 +148,21 @@ gh issue edit <N> --add-assignee @me
 The agent assists — it does **not** replace the human's judgment.
 
 **For grilling tickets** — run a `/grilling` session:
+
 - Agent asks one question at a time
 - Human responds freely
 - Agent synthesizes the decision
 - Resolution = the human's decision, recorded by agent
 
 **For prototype tickets** — run a `/prototype` session:
+
 - Agent builds a rough artifact to react to
 - Human gives feedback
 - Iterate until human approves
 - Resolution = human-approved direction
 
 **For HITL task tickets** — agent does the mechanical work, human judges the outcome:
+
 - Agent executes (signs up, provisions, moves data)
 - Agent reports facts to human
 - Human confirms resolution
@@ -168,6 +175,7 @@ gh issue close <N> --reason completed
 ```
 
 Append to map's `## Decisions so far`:
+
 ```
 - [<ticket name>](link) — <one-line resolution>
 ```
@@ -179,9 +187,10 @@ Closing a HITL ticket may unblocked new tickets. Re-run Step 2. If new HITL tick
 **Phase 1 ends when no HITL tickets remain in the frontier.**
 
 Notify human:
+
 ```
 PHASE 1 COMPLETE — All HITL tickets resolved.
-<N> AFK tickets remain. Handing off to autonomous agents.
+[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3CN%3E]] AFK tickets remain. Handing off to autonomous agents.
 You're free to leave. Phase 2 will run to completion.
 ```
 
@@ -198,26 +207,28 @@ gh issue edit <N> --add-assignee @me
 #### 4b. Dispatch agent
 
 Build a task prompt from the ticket body. Include:
+
 - The ticket's `## Question` section
 - Relevant `## Decisions so-far` from the map
 - The map's `## Notes` for skills to consult
 
 **For research tickets:**
+
 ```
 Task(
-  description="Resolve wayfinder research ticket: <name>",
+  description="Resolve wayfinder research ticket: [[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cname%3E]]",
   subagent_type="general",
-  prompt="You are resolving wayfinder ticket: <ticket name>
-Link: <url>
+  prompt="You are resolving wayfinder ticket: [[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cticket%20name%3E]]
+Link: [[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Curl%3E]]
 
 ## Question
-<ticket body>
+[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:block-html:%3Cticket%20body%3E]]
 
 ## Context from map
-<relevant decisions + destination>
+[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:block-html:%3Crelevant%20decisions%20%2B%20destination%3E]]
 
 ## Notes
-<map notes>
+[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:block-html:%3Cmap%20notes%3E]]
 
 Investigate and resolve this research question. Report findings
 as a resolution comment on the issue. Do NOT close the ticket."
@@ -225,6 +236,7 @@ as a resolution comment on the issue. Do NOT close the ticket."
 ```
 
 **For task tickets:**
+
 ```
 Task(
   description="Resolve wayfinder task ticket: <name>",
@@ -282,11 +294,20 @@ gh issue close <N> --reason completed
 ```
 
 Append to map's `## Decisions so far`:
+
 ```
 - [<ticket name>](link) — <one-line resolution summary>
 ```
 
-#### 4e. Recompute frontier
+#### 4e. Create commits
+
+```
+git add .
+git commit -m "{message}"
+```
+
+
+#### 4f. Recompute frontier
 
 After closing, new tickets may be unblocked. Since Phase 2 only runs AFK tickets, and all frontier tickets at this point are AFK, loop back to Step 4a for each new AFK ticket.
 
@@ -296,16 +317,16 @@ After closing, new tickets may be unblocked. Since Phase 2 only runs AFK tickets
 WAYFINDER RUN — COMPLETE
 ========================
 
-Phase 1 — HITL resolved (<N>):
-• [<ticket-1>](link) — <one-line resolution>
-• [<ticket-2>](link) — <one-line resolution>
+Phase 1 — HITL resolved ([[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3CN%3E]]):
+• [[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cticket-1%3E]]](link) — [[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cone-line%20resolution%3E]]
+• [[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cticket-2%3E]]](link) — [[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cone-line%20resolution%3E]]
 
-Phase 2 — AFK resolved (<M>):
-• [<ticket-3>](link) — <one-line resolution>
-• [<ticket-4>](link) — <one-line resolution>
+Phase 2 — AFK resolved ([[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3CM%3E]]):
+• [[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cticket-3%3E]]](link) — [[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cone-line%20resolution%3E]]
+• [[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cticket-4%3E]]](link) — [[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cone-line%20resolution%3E]]
 
 Code changes:
-<files changed per ticket>
+[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:block-html:%3Cfiles%20changed%20per%20ticket%3E]]
 
 All clear — no remaining tickets.
 ```

@@ -2,7 +2,6 @@
 name: BackendEngineer
 description: "Backend Engineer agent specializing in reading technical blueprints, implementing database schemas/migrations, building API endpoints, and implementing backend business logic."
 mode: subagent
-model: omniroute/Executor
 temperature: 0.1
 permission:
   bash:
