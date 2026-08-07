@@ -1,95 +1,94 @@
 ---
-description: Ship a feature in one go — Plan → Code → Test → Review using 4 agents, handoff via .pipeline/
----
+description: "Ship pipeline — Planner → Coder → Tester → Reviewer. Usage: /ship <feature request>"
+agent: ship-planner
+subtask: true
+template: |
+  # Ship Pipeline Orchestrator
 
-# Ship Command
+  You coordinate the 4-stage ship pipeline: **Planner → Coder → Tester → Reviewer**.
 
-You are the Ship orchestrator. Run the 4-stage pipeline **sequentially**, with each agent reading its input from and writing its output to `.pipeline/`.
+  ## User Request
 
-**Feature request**: $ARGUMENTS
+  $ARGUMENTS
 
-## Setup
+  ## Pipeline Directory: `.pipeline/`
 
-Create `.pipeline/` at the start:
+  ```
+  .pipeline/
+  ├── plan.json           ← ship-planner writes this
+  ├── coder-summary.md    ← ship-coder writes this
+  ├── tester-summary.md   ← ship-tester writes this
+  └── review.md           ← ship-reviewer writes this
+  ```
 
-```bash
-mkdir -p .pipeline
-```
+  ## Your Role
 
-## Stage 1 — Plan
+  1. **Init** — create `.pipeline/` if it doesn't exist.
+  2. **Plan** — dispatch `ship-planner` to analyze the request and write `.pipeline/plan.json`.
+  3. **Code** — once plan exists, dispatch `ship-coder` to implement it and write `.pipeline/coder-summary.md`.
+  4. **Test** — once coder summary exists, dispatch `ship-tester` to write tests and write `.pipeline/tester-summary.md`.
+  5. **Review** — once tester summary exists, dispatch `ship-reviewer` to audit and write `.pipeline/review.md`.
+  6. **Report** — summarize the pipeline state and review verdict.
 
-```
-task(
-  subagent_type="ship-planner",
-  description="Plan: $ARGUMENTS",
-  prompt="Write a plan to .pipeline/plan.json for: $ARGUMENTS"
-)
-```
+  ## Step 1: Init
 
-Verify `.pipeline/plan.json` was created.
+  ```bash
+  mkdir -p .pipeline
+  ```
 
-## Stage 2 — Code
+  ## Step 2: Dispatch Ship Planner
 
-```
-task(
-  subagent_type="ship-coder",
-  description="Code: [feature]",
-  prompt="Read .pipeline/plan.json, implement it, write .pipeline/coder-summary.md"
-)
-```
+  ```
+  task(
+    subagent_type="ship-planner",
+    description="Plan the implementation",
+    prompt="Create an implementation plan for:
 
-Verify `.pipeline/coder-summary.md` was created.
+  $ARGUMENTS
 
-## Stage 3 — Test
+  Research the codebase, then write .pipeline/plan.json with the full plan."
+  )
+  ```
 
-```
-task(
-  subagent_type="ship-tester",
-  description="Test: [feature]",
-  prompt="Read .pipeline/plan.json and .pipeline/coder-summary.md, write tests, write .pipeline/tester-summary.md"
-)
-```
+  ## Step 3: Dispatch Ship Coder
 
-Verify `.pipeline/tester-summary.md` was created.
+  Once plan.json exists:
 
-## Stage 4 — Review
+  ```
+  task(
+    subagent_type="ship-coder",
+    description="Implement the plan",
+    prompt="Read .pipeline/plan.json and implement it exactly. Write .pipeline/coder-summary.md when done."
+  )
+  ```
 
-```
-task(
-  subagent_type="ship-reviewer",
-  description="Review: [feature]",
-  prompt="Read .pipeline/plan.json, .pipeline/coder-summary.md, .pipeline/tester-summary.md, review the implementation, write .pipeline/review.md"
-)
-```
+  ## Step 4: Dispatch Ship Tester
 
-Verify `.pipeline/review.md` was created.
+  Once coder-summary.md exists:
 
-## Stage 5 — Report
+  ```
+  task(
+    subagent_type="ship-tester",
+    description="Write and run tests",
+    prompt="Read .pipeline/plan.json and .pipeline/coder-summary.md. Write tests covering the acceptance criteria. Run them. Write .pipeline/tester-summary.md with results."
+  )
+  ```
 
-Read all pipeline files and present the final report:
+  ## Step 5: Dispatch Ship Reviewer
 
-```markdown
-## Ship Report: [feature]
+  Once tester-summary.md exists:
 
-### Stage Results
-- ✅ / ❌ Plan — [.pipeline/plan.json summary]
-- ✅ / ❌ Code — [.pipeline/coder-summary.md summary]
-- ✅ / ❌ Tests — [.pipeline/tester-summary.md summary]
-- ✅ / ❌ Review — [.pipeline/review.md summary]
+  ```
+  task(
+    subagent_type="ship-reviewer",
+    description="Review implementation",
+    prompt="Read all files in .pipeline/. Review the implementation against the plan for correctness, security, quality, and test coverage. Write .pipeline/review.md with verdict."
+  )
+  ```
 
-### Review Verdict
-[from .pipeline/review.md]
+  ## Step 6: Report
 
-### Files Changed
-[consolidated list from plan and coder output]
-
-### Next Steps
-[from reviewer recommendations]
-```
-
-## Rules
-
-- Run stages **strictly sequentially**. Each stage depends on the previous.
-- Verify each stage's output file exists before proceeding.
-- If any stage fails (error or missing output), stop and report what broke.
-- The user's `$ARGUMENTS` is the feature description — treat it as the source of truth.
+  Read `.pipeline/review.md` and summarize:
+  - Verdict (PASS / PASS WITH NOTES / FAIL)
+  - Critical findings (if any)
+  - What was built

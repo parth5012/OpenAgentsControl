@@ -54,5 +54,12 @@
       "D:/notes/raw/chats/**": "allow",
       "D:/work/projects/OpenCode Setup/.opencode/**": "allow"
     }
+  },
+  "command": {
+    "ship": {
+      "description": "Ship pipeline — plan, review, and ship work through structured tickets",
+      "agent": "ship-planner",
+      "subtask": true
+    }
   }
 }
