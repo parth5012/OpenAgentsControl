@@ -227,3 +227,7 @@ tasks/
 integrations/claude-code/converter/generated/
 .cursorrules
 bun.lock
+
+
+.superpowers/
+.tmp/

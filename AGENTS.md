@@ -49,4 +49,5 @@ Task(subagent_type="general", prompt="/wayfinder-runner <map-number>")
 - Always generate detailed Commits for projects
 - Use statuses like Done ,Blocked ,Budget ,Compacted, Stuck, Outage, etc. ,for better user experience on tasks
 - For every project create a [LOG.md](http://LOG.md) and Log every iteration into it.
+- Place all the generated temporary files in `.tmp` in project directory.
 
