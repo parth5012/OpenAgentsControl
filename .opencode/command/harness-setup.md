@@ -1,27 +1,83 @@
 ---
-description: Initialize harness setup files for best practices — creates AGENTS.md, BLOCKED.md, LEARNINGS.md, LOG.md, TECH_DEBT.md, and project docs by exploring the codebase
+description: Initialize harness setup files for best practices — creates AGENTS.md, BLOCKED.md, LEARNINGS.md, LOG.md, TECH_DEBT.md, and project docs by exploring the codebase via graphify
 agent: general
 subtask: true
 ---
 
-You are a harness setup specialist. Your task is to explore the current project and create all the files and folders needed for a proper agent harness setup.
+You are a harness setup specialist. Your task is to explore the current project using graphify and create all the files and folders needed for a proper agent harness setup.
 
-## Step 1: Explore the Project
+## Step 1: Ensure graphify is installed
 
-Run these commands to understand the project structure:
-- Use `glob` to find all files in the project root (patterns: `*`, `src/**/*`, `lib/**/*`, `packages/**/*`, `apps/**/*`)
-- Read package.json, Cargo.toml, pyproject.toml, or whatever build config exists
-- Read any existing README.md
-- Identify the language(s), framework(s), and project type
+Check if graphify is available:
 
-## Step 2: Create Core Harness Files
+```bash
+graphify --version 2>/dev/null || echo "NOT_INSTALLED"
+```
+
+If not installed, install it:
+
+```bash
+# Prefer uv tool install
+if command -v uv >/dev/null 2>&1; then
+    uv tool install graphifyy
+else
+    pip install graphifyy --break-system-packages 2>/dev/null || pip install graphifyy
+fi
+```
+
+Verify installation:
+
+```bash
+graphify --version
+```
+
+If installation fails, write the blocker to `.tmp/graphify-install-blocked.md` and proceed to Step 2 using manual exploration (glob/grep/read) instead.
+
+## Step 2: Explore the Project with graphify
+
+Run the full graphify pipeline on the current directory:
+
+```bash
+cd PROJECT_ROOT && graphify .
+```
+
+This will:
+- Detect all files in the project
+- Extract entities and relationships (AST for code, LLM for docs)
+- Build a knowledge graph with community detection
+- Generate `graphify-out/` with `graph.json`, `GRAPH_REPORT.md`, and `graph.html`
+
+After it completes, read `graphify-out/GRAPH_REPORT.md` to understand:
+- Project structure and communities
+- God nodes (key concepts)
+- Surprising connections
+- Suggested questions
+
+Then query the graph for project-specific details:
+
+```bash
+graphify query "What is the main tech stack and frameworks used?"
+graphify query "What are the key modules and their responsibilities?"
+graphify query "What are the entry points and main workflows?"
+graphify query "What are the test commands and build commands?"
+graphify query "What are the naming conventions and code patterns?"
+```
+
+If graphify fails or is unavailable, fall back to manual exploration:
+- Use `glob` to find all files (patterns: `*`, `src/**/*`, `lib/**/*`, `packages/**/*`, `apps/**/*`)
+- Read `package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`, or whatever build config exists
+- Read `README.md`
+- Use `grep` to find test scripts, lint commands, build commands
+
+## Step 3: Create Core Harness Files
 
 Create these files if they don't exist. If they exist, skip them (don't overwrite).
 
 ### 1. AGENTS.md (Project Root)
 A comprehensive agent instruction file tailored to THIS project. Include:
-- **Project Overview**: What this project is (from your exploration)
+- **Project Overview**: What this project is (from graphify exploration)
 - **Tech Stack**: Languages, frameworks, build tools detected
+- **Graphify**: Note that graphify is set up — agents should use `graphify query` for codebase questions
 - **Code & File Operations**: Understand-first, minimal changes, code style, systematic fixes, overwrite safety
 - **Execution Guardrails**: Plan-first, safety zones, attribution
 - **Verification**: Test commands, lint commands, typecheck commands (specific to this project)
@@ -105,17 +161,18 @@ _None yet._
 - When debt is paid down, move it to Resolved
 ```
 
-## Step 3: Create Project Docs
+## Step 4: Create Project Docs
 
-Create a `docs/` folder with these files:
+Create a `docs/` folder with these files. Use graphify insights to populate them.
 
 ### docs/architecture.md
-Based on your exploration, document:
+Based on graphify exploration, document:
 - Project structure (directories and their purposes)
 - Key modules/packages and their responsibilities
 - Data flow (if applicable)
 - External dependencies and integrations
 - Entry points
+- Graphify graph location (`graphify-out/graph.json`) for querying
 
 ### docs/decisions.md
 ```markdown
@@ -159,10 +216,11 @@ _Document as discovered._
 _Document as discovered._
 ```
 
-## Step 4: Report
+## Step 5: Report
 
 After creating all files, provide a summary of:
 1. What files were created (with paths)
-2. What was detected about the project (stack, structure)
+2. What was detected about the project (stack, structure, graphify communities)
 3. Any files that already existed and were skipped
-4. Next steps for the user (e.g., "Review AGENTS.md and customize further")
+4. Graphify outputs location (`graphify-out/`) for future queries
+5. Next steps for the user (e.g., "Review AGENTS.md and customize further")
