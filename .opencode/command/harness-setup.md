@@ -27,31 +27,192 @@ If graphify is unavailable, fall back to `glob`, `grep`, and `read` on build con
 
 Create these files if they don't exist (skip if they exist — don't overwrite):
 
-### Files to create:
-- `AGENTS.md` — tailored agent instructions (see structure below)
-- `BLOCKED.md` — active/resolved blockers template
-- `LEARNINGS.md` — learnings + decision log template
-- `LOG.md` — iteration log with format and entry template
-- `TECH_DEBT.md` — active/resolved debt tracker
-- `docs/architecture.md` — project structure, modules, data flow, entry points
-- `docs/decisions.md` — ADR-style decision log template
-- `docs/patterns.md` — naming, code, testing, import conventions
+### 1. AGENTS.md (Project Root)
 
-### AGENTS.md structure:
-Include these sections (concise, project-specific):
-- Project Overview + Tech Stack
-- Code & File Operations (understand-first, minimal changes, code style, systematic fixes, overwrite safety)
-- Execution Guardrails (plan-first, safety zones, attribution)
-- Verification (actual test/lint/typecheck commands for THIS project)
-- Definition of Done (explicit checklist)
-- TDD (test-first approach)
-- Context Re-entry (cold re-entry rules)
-- Harness Patterns (teach docs, one item per chat, close loop, helper agents, never compact, recover with git, loop everything, fix bugs via instructions, spec before code)
-- Exit Codes & Statuses (Done, Blocked, Budget, Compacted, Stuck, Outage, Review)
-- Artifacts (reference to BLOCKED/LEARNINGS/LOG/TECH_DEBT/PROMPT/.tmp)
-- Commit Standards
-- Concision rule
+A comprehensive agent instruction file tailored to THIS project. Include these sections:
+
+- **Project Overview**: 2-3 sentences on what this project does and its purpose
+- **Tech Stack**: Languages, frameworks, build tools, package managers detected
+- **Code & File Operations**: Understand-first (check graphify before reading files), minimal changes, follow existing code style, systematic bug fixes (reproduce then fix then verify), never overwrite existing files unless asked
+- **Execution Guardrails**: Plan-first for multi-step tasks, safety zones (no `rm -rf` / `git reset --hard` without explicit approval), stage/commit only when asked
+- **Verification**: The actual test/lint/typecheck commands for THIS project (e.g. `npm test`, `cargo check`, `pytest`)
+- **Definition of Done**: Explicit checklist — tests green, typecheck clean, e2e exercised (if applicable), committed with detailed message, learnings logged, logged in LOG.md
+- **TDD**: Failing test first then implement then verify green. Never write implementation before a failing test exists
+- **Context Re-entry**: Cold re-entry rules — open with recap, plain language, self-contained questions, one question at a time, anchor with project/branch/PR, end with next action
+- **Harness Patterns**: Teach the agent via docs, point at docs in live code, one item per fresh chat, close the loop (verify + log + self-feedback), spawn helper agents for research, never compact chat, recover with git, loop anything repetitive, fix bugs by updating instructions not just patching, build spec before code
+- **Exit Codes & Statuses**: Done, Blocked, Budget, Compacted, Stuck, Outage, Review
+- **Artifacts**: Reference to BLOCKED.md, LEARNINGS.md, LOG.md, TECH_DEBT.md, PROMPT.md, .tmp/
+- **Commit Standards**: What changed, what was verified, decisions with rationale, issue references
+- **Concision**: Be extremely concise, sacrifice grammar for concision
+
+### 2. BLOCKED.md
+
+A file for the agent to document when it cannot proceed. The human reads this to unblock. Use a table format for tracking:
+
+```markdown
+# Blockers
+
+> Agent writes here when it cannot proceed. Human resolves and unblocks.
+
+## Active Blockers
+
+_None yet._
+
+| ID | Date | Description | Attempted | Needs |
+|----|------|-------------|-----------|-------|
+| —  | —    | —           | —         | —     |
+
+## Resolved Blockers
+
+_None yet._
+
+| ID | Date Resolved | Description | Resolution |
+|----|---------------|-------------|------------|
+| —  | —             | —           | —          |
+```
+
+### 3. LEARNINGS.md
+
+Key learnings, edge cases, and decision rationale discovered during work. Has three sections:
+
+```markdown
+# Learnings
+
+> Key learnings, edge cases, and concepts worth remembering for this project.
+
+## Project-Specific Learnings
+
+_None yet — populate as the agent discovers patterns, edge cases, and gotchas._
+
+## Decision Log
+
+> Why decisions were made, alternatives considered, and consequences.
+
+_None yet._
+
+## Edge Cases
+
+> Known edge cases, gotchas, and non-obvious behaviors discovered during work.
+
+_None yet._
+```
+
+### 4. LOG.md
+
+Iteration log for every agent session/work cycle. Use table format:
+
+```markdown
+# Log
+
+> Every iteration logged with status, what changed, and verification result.
+
+## Format
+
+Each entry:
+- **Date**: YYYY-MM-DD HH:MM
+- **Status**: Done | Blocked | Budget | Compacted | Stuck | Outage | Review
+- **What**: Brief description of the task/change
+- **Verified**: What was run to verify (tests, typecheck, etc.)
+- **Notes**: Any decisions or learnings
+
+## Entries
+
+| Date | Status | What | Verified | Notes |
+|------|--------|------|----------|-------|
+| —    | —      | —    | —        | —     |
+```
+
+### 5. TECH_DEBT.md
+
+Track technical debt separately to distinguish deliberate choices from bugs. Use table format:
+
+```markdown
+# Technical Debt
+
+> Track tech debt separately to distinguish deliberate choices from bugs.
+> When a decision is made for pragmatic reasons (deadline, scope), log it here.
+> When a bug is actually a choice (not a mistake), log it here.
+
+## Active Debt
+
+_None yet — populate as the agent identifies debt during work._
+
+| ID | Date | Description | Rationale | Impact | Effort to Fix |
+|----|------|-------------|-----------|--------|---------------|
+| —  | —    | —           | —         | —      | —             |
+
+## Resolved Debt
+
+_None yet._
+
+| ID | Date Resolved | Description | Resolution |
+|----|---------------|-------------|------------|
+| —  | —             | —           | —          |
+```
+
+### 6. docs/architecture.md
+
+Based on graphify exploration, document the actual project architecture:
+- Project structure (directories and their purposes)
+- Key modules/packages and their responsibilities
+- Data flow (request then processing then response)
+- External dependencies and integrations
+- Entry points (main files, CLI commands, API routes)
+- Graphify graph location (`graphify-out/graph.json`) for future agent queries
+
+### 7. docs/decisions.md
+
+Architecture Decision Record (ADR) log:
+
+```markdown
+# Architecture Decisions
+
+> ADR-style log of significant decisions.
+
+## Format
+
+### [DATE]: [Title]
+- **Status**: Proposed | Accepted | Superseded
+- **Context**: Why this decision was needed
+- **Decision**: What was decided
+- **Consequences**: Trade-offs and implications
+
+## Decisions
+
+_None yet._
+```
+
+### 8. docs/patterns.md
+
+Code patterns, naming conventions, and idioms specific to this project:
+
+```markdown
+# Patterns & Conventions
+
+> Code patterns, naming conventions, and idioms specific to this project.
+
+## Naming Conventions
+
+_Document as discovered (e.g. camelCase for variables, PascalCase for classes)._
+
+## Code Patterns
+
+_Document as discovered (e.g. repository pattern, factory pattern)._
+
+## Testing Patterns
+
+_Document as discovered (e.g. test file location, naming, mocking)._
+
+## Import/Module Conventions
+
+_Document as discovered (e.g. relative vs absolute imports, barrel files)._
+```
 
 ## Step 3: Report
 
-Summarize what was created, what was detected, any skipped files, and next steps.
+Summarize:
+1. What files were created (with paths)
+2. What was detected about the project (stack, structure, graphify communities)
+3. Any files that already existed and were skipped
+4. Graphify outputs location (`graphify-out/`) for future queries
+5. Next steps for the user
