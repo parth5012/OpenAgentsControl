@@ -12,15 +12,6 @@
         "agy": {
           "name": "agy (General Purpose)"
         },
-        "Planner": {
-          "name": "Planner (Planning Only)"
-        },
-        "Executor": {
-          "name": "Executor (Code Implementation)"
-        },
-        "reviewer": {
-          "name": "reviewer (Code Review)"
-        },
         "gemini-3.5": {
           "name": "gemini-3.5-flash(medium)"
         },
@@ -28,38 +19,51 @@
           "name": "gemini-2.5-pro"
         },
         "claude": {
-          "name": "opus-4.6(Thinking)"
+          "name": "claude"
         },
         "fast": {
           "name": "fast (Minimum Latency)"
-        },
-        "research": {
-          "name": "research (Web/Research)"
         },
         "kimi": {
           "name": "kimi (Kimi-specific)"
         },
         "flash": {
-          "name": "flash (Gemini-2.5-flash)"
+          "name": "flash"
+        },
+        "free": {
+          "name": "free models"
+        },
+        "fmd/gpt-5.5": {
+          "name": "gpt-5.5"
+        },
+        "freemodel-dev/gpt-5.6-sol": {
+          "name": "gpt-5.6-sol"
         }
       }
     }
   },
   "plugin": [
     "./plugins/claude-mem.js",
-    "./plugins/graphify.js"
+    "./plugins/graphify.js",
+    "./plugin/task-timing.ts"
   ],
   "permission": {
     "external_directory": {
       "D:/notes/raw/chats/**": "allow",
+      "D:/work/projects/AI-OS/decisions/**": "allow",
       "D:/work/projects/OpenCode Setup/.opencode/**": "allow"
-    }
-  },
-  "command": {
-    "ship": {
-      "description": "Ship pipeline — plan, review, and ship work through structured tickets",
-      "agent": "ship-planner",
-      "subtask": true
-    }
+    },
+    "edit": "allow",
+    "webfetch": "allow",
+    "bash": {
+      "npm test": "allow",
+      "git status": "allow",
+      "graphify *": "allow",
+      "pytest *": "allow",
+      "poetry *": "allow",
+      "rm": "ask",
+      "rmdir": "ask"
+    },
+    "lsp": "allow"
   }
 }
