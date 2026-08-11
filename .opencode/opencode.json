@@ -52,7 +52,8 @@
     "external_directory": {
       "D:/notes/raw/chats/**": "allow",
       "D:/work/projects/AI-OS/decisions/**": "allow",
-      "D:/work/projects/OpenCode Setup/.opencode/**": "allow"
+      "D:/work/projects/OpenCode Setup/.opencode/**": "allow",
+      "D:/notes/*" : "allow"
     },
     "edit": "allow",
     "webfetch": "allow",
