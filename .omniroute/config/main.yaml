@@ -1,0 +1,60 @@
+Omniroute Configuration
+Deployed Vercel serverless LLM proxy
+
+version: 1.0
+name: "omniroute-vercel"
+description: "Omniroute LLM proxy hosted Vercel, connected VPS OpenCode instances"
+
+API Configuration
+api:
+  openai:
+    enabled: true
+    model: gpt-4o
+    base_url: https://api.openai.com/v1
+
+  anthropic:
+    enabled: true
+    model: claude-sonnet-4-20250514
+    base_url: https://api.anthropic.com/v1
+
+Agent Configuration
+agents:
+  main:
+    name: orchestrator
+    description: "Main agent task orchestration"
+    model: gpt-4o
+    max_tokens: 4096
+
+  subagents:
+    enabled: true
+    max_parallel: 5
+
+Skills Configuration
+skills:
+  enabled: true
+  search_paths:
+    - .opencode/skills
+
+Commands Configuration
+commands:
+  enabled: true
+  search_paths:
+    - .opencode/commands
+
+Rules Configuration
+rules:
+  enabled: true
+  search_paths:
+    - .opencode/rules
+
+DeploymentSettings (Vercel)
+deployment:
+  platform: vercel
+  local VPS settings needed
+  Omniroute runs serverless functions Vercel
+
+Logging
+log:
+  level: info
+  save_calls: true
+  call_log_dir: /tmp/omniroute/call_logs
