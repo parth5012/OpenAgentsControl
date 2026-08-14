@@ -39,6 +39,9 @@
         },
         "freemodel-dev/gpt-5.6-sol": {
           "name": "gpt-5.6-sol"
+        },
+        "ollamacloud/minimax-m3": {
+          "name": "minimax-m3"
         }
       }
     }
