@@ -17,10 +17,11 @@ Use claude-mem search tools manual memory queries.
 ## Framework / Platform
 
 general-purpose agent environment. coding agent follow rules practices when executing tasks.
+For Python package management always prefer using uv.
 
 ## Code & File Operations
 
-**Understand First**: check project graphify setup before trying read relevant codebase files`read``glob``grep`).
+**Understand First**: check project graphify setup before trying read relevant codebase files`read``glob``grep`). Never use grep , we have ripgrap installed which is more efficient than grep and its alias as rg.
 **Minimal Changes**: Make smallest possible changes required achieve goal correctly. Avoid refactoring unrelated code.
 **Code Style**: Follow style, indentation, naming conventions, file structures existing codebase.
 **Systematic Fixes**: When fixing bugs, analyze logs test errors, locate root cause, apply fix, re-run verification.
@@ -128,16 +129,6 @@ generate detailed commits:
 
 When project context requires future reference (e.g. job applications, portfolio, stakeholder updates), maintain a project resume in `RESUME.md` or equivalent. Capture: tech stack, key achievements, challenges solved, measurable outcomes. Add to this when a meaningful milestone is reached.
 
-## Wayfinder Runner
-
-When wayfinder map exists want process all tickets one session:
-
-1. Invoke`wayfinder-runner`skill:`/wayfinder-runner <map-number>`
-2. Two-phase flow:
- **Phase 1 (HITL):** prototype/grilling/HITL-task tickets processed human present
- **Phase 2 (AFK):** once HITL resolved, autonomous agents run research/task tickets
-3. Each ticket gets own agent dispatch full context map
-4. Code changes trigger CodeReviewer sub-agent before recording resolution
 
 **Pattern:**
 ```
@@ -146,4 +137,4 @@ Task(subagent_type="general", prompt="/wayfinder-runner <map-number>")
 
 ## Concision
 
-Be extremely concise. Sacrifice grammar sake concision. Answer directly without preamble postamble.
+When responding to me, Be extremely concise. Sacrifice grammar sake concision. Answer directly without preamble postamble.
