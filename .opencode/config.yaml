@@ -1,0 +1,48 @@
+OpenCode Configuration
+file gets copied /opt/opencode/VPS
+
+opencode:
+  version: 1.0
+  workspace: /opt/opencode/workspace
+
+agents:
+  main:
+    name: orchestrator
+    model: gpt-4o
+    max_tokens: 4096
+    context_window: 128000
+
+  subagents:
+    enabled: true
+    max_parallel: 5
+
+  skills:
+    enabled: true
+    search_paths:
+      - .opencode/skills
+      - /usr/local/share/opencode/skills
+
+  commands:
+    enabled: true
+    search_paths:
+      - .opencode/commands
+
+  rules:
+    enabled: true
+    search_paths:
+      - .opencode/rules
+
+api:
+  # Routes through local Omniroute VPS (port 20128)
+  openai:
+    base_url: http://127.0.0.1:20128/v1
+    model: gpt-4o
+  anthropic:
+    base_url: http://127.0.0.1:20128/v1
+    model: claude-sonnet-4-20250514
+
+vps:
+  port: 3000
+  host: 0.0.0.0
+  auto_update: true
+  update_interval_hours: 6
