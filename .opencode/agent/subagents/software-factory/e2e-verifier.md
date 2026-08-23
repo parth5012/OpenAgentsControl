@@ -2,7 +2,6 @@
 name: E2EVerifier
 description: "End-to-End Test Verifier agent specializing in creating, configuring, and executing full-stack E2E tests using frameworks like Playwright, Cypress, or Puppeteer."
 mode: subagent
-model: omniroute/Executor
 temperature: 0.1
 permission:
   bash:

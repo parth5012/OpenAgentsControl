@@ -19,7 +19,7 @@ Use claude-mem search tools manual memory queries.
 general-purpose agent environment. coding agent follow rules practices when executing tasks.
 For Python package management always prefer using uv.
 
-## Code & File Operations
+## Code &amp; File Operations
 
 **Understand First**: check project graphify setup before trying read relevant codebase files`read``glob``grep`). Never use grep , we have ripgrap installed which is more efficient than grep and its alias as rg.
 **Minimal Changes**: Make smallest possible changes required achieve goal correctly. Avoid refactoring unrelated code.
@@ -41,6 +41,7 @@ Ensure linting, compilation, any existing test suites pass successfully.
 ## Definition Done
 
 task **DONE** only when:
+
 1. Relevant testsgreen (unit + integration)
 2. Typecheck passes clean
 3. user-facing flows: exercised end-to-end (e.g. Playwright for web)
@@ -53,6 +54,7 @@ task **DONE** only when:
 ## TDD mandatory
 
 Every change follows **failing test first implement verify**:
+
 1. Writetest(s)capture desired behavior watch **fail** (red).
 2. Implement minimum make pass.
 3. Run suite typecheck confirm green.
@@ -97,6 +99,7 @@ agent *built* feature sits hugecontext (150k–200k tokens). drives review, enti
 ## Statuses
 
 Use these statuses for tasks:
+
 - `Done` - completed successfully
 - `Blocked`documented BLOCKED.md reason
 - `Budget`token/time budget exhausted
@@ -118,6 +121,7 @@ Use these statuses for tasks:
 ## Commit Standards
 
 generate detailed commits:
+
 - What changed why
 - Whatverified (tests run, typecheck status)
 - Any decisions made rationale
@@ -129,12 +133,12 @@ generate detailed commits:
 
 When project context requires future reference (e.g. job applications, portfolio, stakeholder updates), maintain a project resume in `RESUME.md` or equivalent. Capture: tech stack, key achievements, challenges solved, measurable outcomes. Add to this when a meaningful milestone is reached.
 
-
 **Pattern:**
+
 ```
 Task(subagent_type="general", prompt="/wayfinder-runner <map-number>")
 ```
 
 ## Concision
 
-When responding to me, Be extremely concise. Sacrifice grammar sake concision. Answer directly without preamble postamble.
+When responding to me, Be extremely concise. Sacrifice grammar sake concision. Answer directly without preamble postamble. Use `visual-findings` skill whenever the output needs to be long for the user.

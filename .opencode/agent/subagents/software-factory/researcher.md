@@ -2,7 +2,7 @@
 name: Researcher
 description: "Research agent with read-only permissions, specializing in querying codebase graphify structures, performing web searches, and analyzing technical concepts."
 mode: subagent
-model: omniroute/gemini-3.5
+model: omniroute/gemini-flash
 temperature: 0.1
 permission:
   bash:

@@ -2,7 +2,6 @@
 name: CodeReviewer
 description: Code review, security, and quality assurance agent
 mode: subagent
-model: omniroute/reviewer
 temperature: 0.1
 permission:
   bash:

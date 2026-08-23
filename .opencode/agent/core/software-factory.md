@@ -2,7 +2,7 @@
 name: SoftwareFactory
 description: "Orchestrator for the Software Factory agent architecture, coordinating requirement research, user story writing, technical blueprinting, parallel engineering, end-to-end testing, and validation workflows."
 mode: primary
-model: omniroute/gemini-3.5
+model: omniroute/gemini-flash
 temperature: 0.2
 ---
 

@@ -13,8 +13,8 @@
         "agy": {
           "name": "agy (General Purpose)"
         },
-        "gemini-3.5": {
-          "name": "gemini-3.5-flash(medium)"
+        "gemini-flash": {
+          "name": "gemini-flash"
         },
         "gemini-2.5": {
           "name": "gemini-2.5-pro"
@@ -42,6 +42,15 @@
         },
         "ollamacloud/minimax-m3": {
           "name": "minimax-m3"
+        },
+        "muse": {
+          "name": "muse-spark"
+        },
+        "3.7": {
+          "name": "gemini-3.7-flash"
+        },
+        "alpha" : {
+          "name": "alpha"
         }
       }
     }
