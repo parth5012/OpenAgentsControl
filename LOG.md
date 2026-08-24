@@ -42,3 +42,33 @@
 **What:** Created asset-upload skill for any generated/fetched asset (screenshots, audio, video, text, pdf, zip): upload to free anonymous host, return public URL. Script: .opencode/scripts/upload.ts (catbox permanent default, litterbox temp 1GB, 0x0 ~30d). Command: /upload.
 **Verified:** Live test uploaded AGENTS.md -> https://files.catbox.moe/u8w3eb.md EXIT=0.
 **Next:** Restart OpenCode; agents auto-use /upload to share generated artifacts.
+
+### Visual-findings template gallery (rounds 1-2)
+**Status:** Review
+**What:** User flagged visual-findings UI as lame + templates/ dir empty. Built 10 design variants (dashboard+detail each, identical 6-finding demo data = real audit of the skill itself) in .tmp/findings-ui-gallery/ + gallery index.html. Round 1: Terminal, Editorial, Aurora Glass, Brutalist, Refined Ops, Kanban. Round 2 (after web research on 2026 dashboard trends): Linear, Supabase Console, Stripe Analytics, GitHub Primer. All opened/reviewed via Orca embedded browser (orca tab create/goto/screenshot).
+**Verified:** Screenshots of all 4 round-2 dashboards render clean; baseline v1.0 generated via existing generate.mjs for contrast.
+**Saved:** User picked V5 (refined-ops) + V6 (kanban) -> copied to .opencode/skills/visual-findings/templates/{v5-refined-ops,v6-kanban}/{dashboard,detail}.html.
+**Next:** User votes on round 2 (V7-V10); winners also copied to templates/; then wire --style flag into generate.mjs.
+
+### Visual-findings round 3 (dark-only simplicity pass)
+**Status:** Review
+**What:** User saved V7/V8/V10 to templates/ (5 canonical total incl. V5/V6; V9 Stripe rejected - user not a light-mode guy). Built round 3 dark-only UX-first variants: V11 Raycast command-bar, V12 Vercel Geist monochrome, V13 Sentry master-detail (zero page navigation, arrow-key nav), V14 shadcn/ui zinc. All screenshot-verified in Orca browser.
+**Next:** User votes round 3; save winners; then wire --style flag into generate.mjs.
+
+### Visual-findings round 3 saved
+**Status:** Done (template phase)
+**What:** Saved V12 vercel, V13 master-detail (single-page, no separate detail.html), V14 shadcn to templates/. Canonical set now: v5-refined-ops, v6-kanban, v7-linear, v8-supabase, v10-github, v12-vercel, v13-master-detail, v14-shadcn. Rejected by user: V1-V4 (round 1 loud/experimental), V9 stripe + V11 raycast (light/wrong fit).
+**Verified:** 15 files present under .opencode/skills/visual-findings/templates/.
+**Next:** wire --style flag into generate.mjs mapping to these template dirs (user has not yet requested).
+
+### Visual-findings --style generator wiring complete
+**Status:** Done
+**What:** Wired `--style` flag into `generate.mjs`. Created `scripts/styles/` module architecture (`shared.mjs` + 8 style modules: v5-refined-ops, v6-kanban, v7-linear, v8-supabase, v10-github, v12-vercel, v13-master-detail, v14-shadcn). Added dynamic import, CLI alias mapping (e.g. `linear`, `sentry`, `shadcn`), and XSS escaping across all styles.
+**Verified:** TDD test harness `.opencode/skills/visual-findings/scripts/test/generate.test.mjs` running 20 test suites — all 20 pass green (default, all 8 styles x 2 aliases, XSS escaping, unknown-style handling).
+**Updated:** `SKILL.md` bumped to v2.0 with `--style` documentation table.
+
+### URL / Href link support added across visual-findings reports
+**Status:** Done
+**What:** Added `url` (and aliases `href`, `link`, `sourceUrl`, `targetUrl`) support to visual-findings schema and generator. In dashboards, URL links render as clickable `target="_blank"` link badges (with `event.stopPropagation()` so row clicks still navigate to details). In detail views/master-detail panes, direct links open source codebase locations, bug trackers, problem statements, or extracted web resources with 1-click.
+**Verified:** TDD test harness `generate.test.mjs` running 21/21 passing test suites.
+**Updated:** `SKILL.md` updated with URL schema property & usage note.
