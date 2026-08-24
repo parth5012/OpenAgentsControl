@@ -1,0 +1,140 @@
+import { esc, prose, loc, renderUrlLink, linkUrl } from './shared.mjs';
+
+export default {
+  name: 'v13-master-detail',
+  hasDetailPages: false,
+
+  dashboard(findings, meta) {
+    const safeData = JSON.stringify(findings.map((f, i) => ({
+      id: f.id || `VF-${String(i+1).padStart(3,'0')}`,
+      sev: f.severity || 'info',
+      sc: f.severity === 'critical' ? 'var(--crit)' : f.severity === 'high' ? 'var(--high)' : f.severity === 'medium' ? 'var(--med)' : f.severity === 'low' ? 'var(--low)' : 'var(--info)',
+      cat: f.category || 'general',
+      title: f.title || '',
+      path: loc(f),
+      url: linkUrl(f),
+      tags: (f.tags || []).map(t => `#${t}`),
+      desc: prose(f.description),
+      code: f.codeSnippet ? esc(f.codeSnippet) : null,
+      fix: f.recommendation ? prose(f.recommendation) : null
+    }))).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(meta.title)}</title>
+<style>
+  :root{
+    --bg:#10131a; --side:#0d1015; --surf:#171b23; --surf2:#1d222c;
+    --line:#242a35; --fg:#e6e9ee; --dim:#8b93a1; --dim2:#5d6572; --acc:#818cf8;
+    --crit:#f87171; --high:#fb923c; --med:#fbbf24; --low:#38bdf8; --info:#94a3b8;
+    --sans:'Inter',system-ui,sans-serif; --mono:'Cascadia Code',ui-monospace,Menlo,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:13.5px;line-height:1.55;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  header.top{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--line);flex-shrink:0}
+  .brand{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:9px}
+  .brand .sq{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#818cf8,#6366f1);display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff}
+  .crumb{color:var(--dim);font-size:12.5px}
+  .chips{margin-left:auto;display:flex;gap:5px}
+  .chip{font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:99px;border:1px solid var(--line);color:var(--dim);cursor:pointer;background:transparent}
+  .chip:hover{color:var(--fg)}
+  .chip.on{background:var(--surf2);color:var(--fg);border-color:#39404d}
+  .chip i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;font-style:normal}
+  main{flex:1;display:flex;min-height:0}
+  .listpane{width:360px;flex-shrink:0;border-right:1px solid var(--line);background:var(--side);overflow-y:auto}
+  .item{display:block;padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;border-left:3px solid transparent}
+  .item:hover{background:var(--surf)}
+  .item.on{background:var(--surf);border-left-color:var(--sc)}
+  .irow{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .sdot{width:8px;height:8px;border-radius:50%;background:var(--sc)}
+  .isv{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--sc)}
+  .icat{margin-left:auto;font-size:10.5px;color:var(--dim2)}
+  .ititle{font-size:13px;font-weight:500;line-height:1.4}
+  .ipath{font-family:var(--mono);font-size:10.5px;color:var(--dim2);margin-top:4px}
+  .detailpane{flex:1;min-width:0;overflow-y:auto;padding:26px 32px}
+  .dhead{margin-bottom:20px}
+  .drow{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .dbadge{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--sc);background:color-mix(in srgb,var(--sc) 14%,transparent);padding:3px 11px;border-radius:99px}
+  .dbadge.soft{color:var(--dim);background:var(--surf2)}
+  h1{font-size:20px;font-weight:650;letter-spacing:-.01em;line-height:1.35}
+  .dpath{font-family:var(--mono);font-size:11.5px;color:var(--acc);margin-top:9px}
+  .card{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:17px 19px;margin-bottom:13px}
+  .card h2{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim2);margin-bottom:9px}
+  p{color:#c9cfd9}
+  pre{margin-top:10px;background:#0b0e13;border:1px solid var(--line);border-radius:8px;padding:14px;font-family:var(--mono);font-size:11.5px;line-height:1.6;color:#c4cad6;overflow-x:auto}
+  .fixcard{border-left:3px solid #34d399}
+  .fixcard h2{color:#34d399}
+  .tagsline{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .tag{font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:2px 10px}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="brand"><span class="sq">VF</span> visual-findings</span>
+  <span class="crumb">/ ${esc(meta.title)} · ${findings.length} findings</span>
+  <div class="chips" id="chips">
+    <button class="chip on" data-sev="">All</button>
+    <button class="chip" data-sev="critical"><i style="background:var(--crit)"></i>Critical</button>
+    <button class="chip" data-sev="high"><i style="background:var(--high)"></i>High</button>
+    <button class="chip" data-sev="medium"><i style="background:var(--med)"></i>Medium</button>
+    <button class="chip" data-sev="low"><i style="background:var(--low)"></i>Low</button>
+    <button class="chip" data-sev="info"><i style="background:var(--info)"></i>Info</button>
+  </div>
+</header>
+
+<main>
+  <nav class="listpane vf-listpane" id="list"></nav>
+  <article class="detailpane" id="detail"></article>
+</main>
+
+<script>
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+const F = ${safeData};
+let cur=0, sevF='';
+const listEl=document.getElementById('list'), detEl=document.getElementById('detail');
+
+function renderList(){
+  listEl.innerHTML=F.map((f,i)=>
+    (sevF&&f.sev!==sevF)?'':
+    \`<div class="item \${i===cur?'on':''}" style="--sc:\${f.sc}" data-i="\${i}">
+      <div class="irow"><span class="sdot"></span><span class="isv">\${esc(f.sev)}</span><span class="icat">\${esc(f.cat)}</span></div>
+      <div class="ititle">\${esc(f.title)}</div><div class="ipath">\${esc(f.path)}</div></div>\`).join('');
+  listEl.querySelectorAll('.item').forEach(el=>el.onclick=()=>{cur=+el.dataset.i;renderList();renderDetail()});
+}
+function renderDetail(){
+  if(!F.length){detEl.innerHTML='<div class="card">No findings</div>';return}
+  const f=F[cur];
+  detEl.innerHTML=\`
+    <div class="dhead">
+      <div class="drow"><span class="dbadge">\${esc(f.sev)}</span><span class="dbadge soft">\${esc(f.cat)}</span><span class="dbadge soft">\${esc(f.id)}</span></div>
+      <h1>\${esc(f.title)}</h1>
+      <div class="dpath">\${esc(f.path)} · generated ${esc(meta.now)} \${f.url ? \`· <a href="\${esc(f.url)}" target="_blank" rel="noopener noreferrer" style="color:var(--acc)">\${esc(f.url)} ↗</a>\` : ''}</div>
+    </div>
+    <div class="card"><h2>Description</h2><p>\${f.desc}</p></div>
+    \${f.code?\`<div class="card"><h2>Evidence</h2><pre>\${f.code}</pre></div>\`:''}
+    \${f.fix?\`<div class="card fixcard"><h2>Recommended fix</h2><p>\${f.fix}</p></div>\`:''}
+    <div class="tagsline">\${(f.tags||[]).map(t=>\`<span class="tag">\${esc(t)}</span>\`).join('')}</div>\`;
+}
+document.getElementById('chips').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  sevF=c.dataset.sev;
+  document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+  const vis=F.findIndex((f,i)=>(!sevF||f.sev===sevF)&&i>=cur);
+  cur=vis===-1?0:vis; renderList(); renderDetail();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    const vis=F.map((f,i)=>(!sevF||f.sev===sevF)?i:-1).filter(i=>i>=0);
+    let p=vis.indexOf(cur);
+    cur=vis[Math.max(0,Math.min(vis.length-1,p+(e.key==='ArrowDown'?1:-1)))];
+    renderList();renderDetail();
+  }
+});
+renderList();renderDetail();
+</script>
+</body>
+</html>`;
+  }
+};
