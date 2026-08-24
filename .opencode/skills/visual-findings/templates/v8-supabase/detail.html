@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VF-001 — findings console</title>
+<style>
+  :root{
+    --bg:#121212; --side:#171717; --card:#1c1c1c; --elev:#242424;
+    --line:#2e2e2e; --fg:#ededed; --dim:#a3a3a3; --dim2:#707070;
+    --green:#3ecf8e; --greensoft:rgba(62,207,142,.12);
+    --crit:#f87171;
+    --sans:'Inter',system-ui,sans-serif; --mono:'Cascadia Code',ui-monospace,Menlo,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:13px;line-height:1.55;display:flex;min-height:100vh}
+  aside{width:230px;flex-shrink:0;background:var(--side);border-right:1px solid var(--line)}
+  .brand{padding:16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;font-weight:600}
+  .brand .b{width:26px;height:26px;border-radius:6px;background:#3ecf8e;display:inline-flex;align-items:center;justify-content:center;color:#0c2818;font-weight:900}
+  nav{padding:4px 12px}
+  .nitem{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:5px;color:var(--dim);text-decoration:none;margin-bottom:2px}
+  .nitem:hover{background:var(--card);color:var(--fg)}
+  main{flex:1;min-width:0;padding:0 30px 40px}
+  a.back{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:12.5px;margin:16px 0}
+  a.back:hover{color:var(--green)}
+  h1{font-size:19px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{font-size:11px;font-weight:600;padding:3px 11px;border-radius:99px}
+  .chip.crit{background:rgba(248,113,113,.13);color:var(--crit)}
+  .chip.soft{background:var(--card);border:1px solid var(--line);color:var(--dim)}
+  .grid2{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:18px;align-items:start}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:17px 19px;margin-bottom:14px}
+  .panel h2{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim2);margin-bottom:9px;font-weight:600}
+  p code{font-family:var(--mono);font-size:11.5px;background:rgba(62,207,142,.1);color:var(--green);padding:1px 5px;border-radius:4px}
+  pre{margin-top:10px;background:#101010;border:1px solid var(--line);border-radius:7px;padding:14px;font-family:var(--mono);font-size:11.5px;line-height:1.6;color:#c8ccd4;overflow-x:auto}
+  pre b{color:#ff8080} pre i{color:var(--dim2);font-style:normal}
+  .sidepanel{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:15px 17px;margin-bottom:14px}
+  .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+  .kv:last-child{border-bottom:none}
+  .kv .k{color:var(--dim)} .kv .v{font-family:var(--mono);font-size:11.5px}
+  .fix{border-left:3px solid var(--green)}
+  .fix h2{color:var(--green)}
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand"><span class="b">◢</span> findings-console</div>
+  <nav>
+    <a class="nitem" href="v8-supabase.html">▤ Findings</a>
+    <a class="nitem">◷ Runs</a>
+  </nav>
+</aside>
+
+<main>
+  <a class="back" href="v8-supabase.html">← Findings / VF-001</a>
+  <h1>XSS / HTML injection via unescaped finding fields</h1>
+  <div class="chips"><span class="chip crit">Critical</span><span class="chip soft">security</span><span class="chip soft">VF-001</span></div>
+
+  <div class="grid2">
+    <div>
+      <div class="panel">
+        <h2>Description</h2>
+        <p>generate.mjs interpolates <code>title</code>, <code>description</code>, <code>recommendation</code> and tags directly into HTML templates. Only <code>codeSnippet</code> passes through escapeHtml(). A finding containing <code>&lt;script&gt;</code> or raw HTML breaks the page layout and executes arbitrary markup when the report is opened.</p>
+      </div>
+      <div class="panel">
+        <h2>Evidence</h2>
+<pre><i>// current - line 360</i>
+&lt;div class=<b>"description"</b>&gt;
+  &lt;p&gt;<b>${finding.description}</b>&lt;/p&gt;   <i>// unescaped</i>
+&lt;/div&gt;</pre>
+      </div>
+      <div class="panel fix">
+        <h2>Recommended fix</h2>
+        <p>Route every string field through escapeHtml() before interpolation — including title, description, recommendation, category, source and tag values.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidepanel">
+        <div class="kv"><span class="k">Severity</span><span class="v" style="color:var(--crit)">critical</span></div>
+        <div class="kv"><span class="k">Category</span><span class="v">security</span></div>
+        <div class="kv"><span class="k">Location</span><span class="v" style="color:var(--green)">generate.mjs:360</span></div>
+        <div class="kv"><span class="k">Source agent</span><span class="v">ui-audit</span></div>
+        <div class="kv"><span class="k">Detected</span><span class="v">2026-08-23</span></div>
+        <div class="kv"><span class="k">Tags</span><span class="v">#xss #escaping</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

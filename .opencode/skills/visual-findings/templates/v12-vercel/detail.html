@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XSS injection — UI Audit</title>
+<style>
+  :root{
+    --bg:#0a0a0a; --surf:#141414; --line:#262626; --line2:#333;
+    --fg:#ededed; --dim:#a1a1a1; --dim2:#707070; --crit:#ff4d4d;
+    --sans:'Inter',system-ui,sans-serif; --mono:'Geist Mono','Cascadia Code',ui-monospace,Menlo,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:13.5px;line-height:1.6}
+  header.top{border-bottom:1px solid var(--line);padding:14px 28px;display:flex;align-items:center;gap:14px}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:600}
+  .logo .tri{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:12px solid #fff}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:760px;margin:0 auto;padding:34px 28px 50px}
+  a.back{color:var(--dim);font-size:12.5px} a.back:hover{color:var(--fg)}
+  .head{margin:18px 0 22px}
+  .row1{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--crit)}
+  .sev{font-family:var(--mono);font-size:11px;color:var(--crit);text-transform:uppercase;letter-spacing:.05em}
+  .cat{font-family:var(--mono);font-size:11px;color:var(--dim2)}
+  h1{font-size:20px;font-weight:600;letter-spacing:-.01em;line-height:1.35}
+  .path{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-top:9px}
+  .path b{color:var(--fg);font-weight:500}
+  section{border-top:1px solid var(--line);padding:18px 0}
+  .label{font-size:10.5px;font-weight:600;color:var(--dim2);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px}
+  p{color:#d4d4d4}
+  p code{font-family:var(--mono);font-size:11.5px;background:var(--surf);border:1px solid var(--line);padding:1px 6px;border-radius:5px}
+  pre{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:16px;font-family:var(--mono);font-size:12px;line-height:1.65;overflow-x:auto;color:#d4d4d4}
+  pre b{color:#ff6b6b} pre i{color:var(--dim2);font-style:normal}
+  .fix{color:#4ade80;font-family:var(--mono);font-size:11px}
+  .foot{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:16px;margin-top:6px;color:var(--dim2);font-size:11.5px;font-family:var(--mono)}
+</style>
+</head>
+<body>
+<header class="top"><span class="logo"><span class="tri"></span> findings</span><span style="color:var(--dim)">/ ui-audit</span></header>
+<div class="wrap">
+  <a class="back" href="v12-vercel.html">← All findings</a>
+  <div class="head">
+    <div class="row1"><span class="dot"></span><span class="sev">critical</span><span class="cat">security · VF-001 · ui-audit</span></div>
+    <h1>XSS / HTML injection via unescaped finding fields</h1>
+    <div class="path">in <b>scripts/generate.mjs</b> on line <b>360</b> · detected Aug 23, 2026</div>
+  </div>
+
+  <section>
+    <div class="label">Description</div>
+    <p>generate.mjs interpolates <code>title</code>, <code>description</code>, <code>recommendation</code> and tags directly into HTML templates. Only <code>codeSnippet</code> passes through escapeHtml(). A finding containing <code>&lt;script&gt;</code> or raw HTML breaks the page layout and executes arbitrary markup when the report is opened.</p>
+  </section>
+
+  <section>
+    <div class="label">Evidence</div>
+<pre><i>// current - line 360</i>
+&lt;div class=<b>"description"</b>&gt;
+  &lt;p&gt;<b>${finding.description}</b>&lt;/p&gt;   <i>// unescaped</i>
+&lt;/div&gt;</pre>
+  </section>
+
+  <section>
+    <div class="label fix">Recommended fix</div>
+    <p>Route every string field through escapeHtml() before interpolation — including title, description, recommendation, category, source and tag values.</p>
+  </section>
+
+  <div class="foot"><span>#xss #escaping #generator</span><span>self-contained report</span></div>
+</div>
+</body>
+</html>

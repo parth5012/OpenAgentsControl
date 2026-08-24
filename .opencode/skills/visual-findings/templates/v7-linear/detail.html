@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VF-001 — XSS / HTML injection via unescaped finding fields</title>
+<style>
+  :root{
+    --bg:#0f1011; --side:#131316; --surf:#17181b; --elev:#1d1e22;
+    --line:rgba(255,255,255,.06); --line2:rgba(255,255,255,.10);
+    --fg:#f7f8f8; --dim:#8a8f98; --dim2:#62666d;
+    --acc:#5e6ad2; --accsoft:rgba(94,106,210,.16);
+    --p0:#ff5e5e;
+    --sans:'Inter',system-ui,sans-serif; --mono:'Cascadia Code',ui-monospace,Menlo,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:13px;line-height:1.55;display:flex;min-height:100vh}
+  aside{width:216px;flex-shrink:0;background:var(--side);border-right:1px solid var(--line);padding:14px 10px}
+  .ws{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:6px;font-weight:600;margin-bottom:12px}
+  .ws .logo{width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#5e6ad2,#8a7ff0);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+  .navlabel{font-size:11px;font-weight:600;color:var(--dim2);padding:10px 10px 6px}
+  .nav{display:block;padding:6px 10px;border-radius:6px;color:var(--dim);text-decoration:none}
+  .nav:hover{background:var(--surf);color:var(--fg)}
+  main{flex:1;min-width:0}
+  header.top{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid var(--line)}
+  .crumb{color:var(--dim);text-decoration:none} .crumb b{color:var(--fg)}
+  a{color:inherit;text-decoration:none}
+  .issuehead{max-width:900px;margin:0 auto;padding:28px 32px 18px}
+  .idrow{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .state{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:99px;background:rgba(255,94,94,.15);color:#ff8a8a;display:inline-flex;align-items:center;gap:6px}
+  .state::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--p0)}
+  h1{font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.35}
+  .meta{display:flex;gap:14px;color:var(--dim2);font-size:12px;margin-top:10px}
+  .body{max-width:900px;margin:0 auto;padding:6px 32px 40px}
+  .card{background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin-bottom:12px}
+  .card h2{font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:9px}
+  p code{font-family:var(--mono);font-size:11.5px;background:var(--accsoft);color:#b6bcf0;padding:1px 5px;border-radius:4px}
+  pre{margin-top:10px;background:#101114;border:1px solid var(--line);border-radius:7px;padding:14px;font-family:var(--mono);font-size:11.5px;line-height:1.6;color:#c8ccd4;overflow-x:auto}
+  pre b{color:#ff8080} pre i{color:var(--dim2);font-style:normal}
+  .fixcard{border-left:3px solid #4cb782}
+  .fixcard h2{color:#7dd0a5}
+  .props{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:2px}
+  .prop{background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+  .prop .k{font-size:10.5px;color:var(--dim2);margin-bottom:3px}
+  .prop .v{font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+  .pager{display:flex;justify-content:space-between;max-width:900px;margin:0 auto;padding:0 32px 30px;font-size:12.5px;color:var(--dim)}
+  .pager a:hover{color:var(--fg)}
+</style>
+</head>
+<body>
+<aside>
+  <div class="ws"><span class="logo">VF</span> visual-findings</div>
+  <div class="navlabel">Workspace</div>
+  <a class="nav" href="v7-linear.html">← Audit · visual-findings</a>
+</aside>
+<main>
+  <header class="top"><span class="crumb" href="v7-linear.html">Audit / visual-findings / <b>VF-001</b></span></header>
+
+  <div class="issuehead">
+    <div class="idrow"><span class="state">Critical</span><span style="color:var(--dim2);font-family:var(--mono);font-size:11.5px">VF-001</span></div>
+    <h1>XSS / HTML injection via unescaped finding fields</h1>
+    <div class="meta"><span>security</span><span>opened by ui-audit</span><span>Aug 23, 2026</span><span>scripts/generate.mjs:360</span></div>
+  </div>
+
+  <div class="body">
+    <div class="props">
+      <div class="prop"><div class="k">Severity</div><div class="v" style="color:#ff8a8a">critical</div></div>
+      <div class="prop"><div class="k">Category</div><div class="v">security</div></div>
+      <div class="prop"><div class="k">Location</div><div class="v">generate.mjs:360</div></div>
+      <div class="prop"><div class="k">Source</div><div class="v">ui-audit</div></div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h2>Description</h2>
+      <p>generate.mjs interpolates <code>title</code>, <code>description</code>, <code>recommendation</code> and tags directly into HTML templates. Only <code>codeSnippet</code> passes through escapeHtml(). A finding containing <code>&lt;script&gt;</code> or raw HTML breaks the page layout and executes arbitrary markup when the report is opened.</p>
+    </div>
+
+    <div class="card">
+      <h2>Evidence</h2>
+<pre><i>// current - line 360</i>
+&lt;div class=<b>"description"</b>&gt;
+  &lt;p&gt;<b>${finding.description}</b>&lt;/p&gt;   <i>// unescaped</i>
+&lt;/div&gt;</pre>
+    </div>
+
+    <div class="card fixcard">
+      <h2>Recommendation</h2>
+      <p>Route every string field through escapeHtml() before interpolation — including title, description, recommendation, category, source and tag values.</p>
+    </div>
+  </div>
+
+  <div class="pager"><a href="v7-linear.html">← Back to list</a><a href="v7-linear-detail.html">Next issue →</a></div>
+</main>
+</body>
+</html>

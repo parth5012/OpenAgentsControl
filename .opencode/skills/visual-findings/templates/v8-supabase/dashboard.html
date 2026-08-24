@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Findings — visual-findings console</title>
+<style>
+  :root{
+    --bg:#121212; --side:#171717; --card:#1c1c1c; --elev:#242424;
+    --line:#2e2e2e; --fg:#ededed; --dim:#a3a3a3; --dim2:#707070;
+    --green:#3ecf8e; --greensoft:rgba(62,207,142,.12);
+    --crit:#f87171; --high:#fb923c; --med:#facc15; --low:#22d3ee;
+    --sans:'Inter',system-ui,sans-serif; --mono:'Cascadia Code',ui-monospace,Menlo,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:13px;line-height:1.5;display:flex;min-height:100vh}
+  aside{width:230px;flex-shrink:0;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column}
+  .brand{padding:16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;font-weight:600;font-size:13.5px}
+  .brand .b{width:26px;height:26px;border-radius:6px;background:#3ecf8e;display:inline-flex;align-items:center;justify-content:center;color:#0c2818;font-weight:900}
+  .proj{margin:14px 12px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--dim);display:flex;justify-content:space-between}
+  nav{padding:4px 12px;flex:1}
+  .nitem{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:5px;color:var(--dim);font-size:13px;text-decoration:none;margin-bottom:2px}
+  .nitem:hover{background:var(--card);color:var(--fg)}
+  .nitem.on{background:var(--greensoft);color:var(--green);font-weight:500}
+  .runbox{margin:12px;padding:11px 13px;border:1px dashed var(--line);border-radius:8px;font-size:11.5px;color:var(--dim)}
+  .runbox b{color:var(--fg);display:block;margin-bottom:2px}
+  main{flex:1;min-width:0;padding:0 26px 30px}
+  header.top{display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid var(--line);margin-bottom:20px}
+  h1{font-size:16px;font-weight:600}
+  .sub{color:var(--dim2);font-size:12px}
+  input.q{all:unset;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:7px 12px;width:250px;font-size:12.5px;color:var(--fg);margin-left:auto}
+  input.q:focus{border-color:var(--green)}
+  button.btn{all:unset;cursor:pointer;background:var(--green);color:#0c2818;font-size:12.5px;font-weight:600;border-radius:6px;padding:7px 14px}
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:13px 15px}
+  .kpi .v{font-family:var(--mono);font-size:23px;font-weight:700;line-height:1}
+  .kpi .l{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin-top:6px;display:flex;align-items:center;gap:6px}
+  .kpi .l i{width:7px;height:7px;border-radius:50%;font-style:normal}
+  .k-critical .v{color:var(--crit)} .l-critical i{background:var(--crit)}
+  .k-high .v{color:var(--high)} .l-high i{background:var(--high)}
+  .k-medium .v{color:var(--med)} .l-medium i{background:var(--med)}
+  .k-low .v{color:var(--low)} .l-low i{background:var(--low)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .phead{display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--dim)}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim2);text-align:left;font-weight:600;padding:9px 15px;border-bottom:1px solid var(--line)}
+  td{padding:10px 15px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+  tbody tr{cursor:pointer} tbody tr:hover{background:var(--elev)}
+  tbody tr:last-child td{border-bottom:none}
+  tr.hidden{display:none}
+  .sevchip{font-size:11px;font-weight:600;padding:2px 9px;border-radius:99px}
+  .s-critical{background:rgba(248,113,113,.13);color:var(--crit)}
+  .s-high{background:rgba(251,146,60,.12);color:var(--high)}
+  .s-medium{background:rgba(250,204,21,.11);color:var(--med)}
+  .s-low{background:rgba(34,211,238,.11);color:var(--low)}
+  .s-info{background:var(--elev);color:var(--dim)}
+  .path{font-family:var(--mono);font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand"><span class="b">◢</span> findings-console</div>
+  <div class="proj"><span>visual-findings skill</span><span style="color:var(--green)">● prod</span></div>
+  <nav>
+    <a class="nitem on">▤ Findings</a>
+    <a class="nitem">◷ Runs</a>
+    <a class="nitem">⚑ Rules</a>
+    <a class="nitem">⚙ Settings</a>
+  </nav>
+  <div class="runbox"><b>Run 20260823-140512</b>ui-audit · 6 findings · Aug 23, 2026</div>
+</aside>
+
+<main>
+  <header class="top">
+    <div><h1>Findings</h1><div class="sub">Latest audit run · updated just now</div></div>
+    <input class="q" id="q" placeholder="Filter findings…" oninput="apply()">
+    <button class="btn">Export report</button>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi k-critical"><div class="v">1</div><div class="l l-critical"><i></i>Critical</div></div>
+    <div class="kpi k-high"><div class="v">1</div><div class="l l-high"><i></i>High</div></div>
+    <div class="kpi k-medium"><div class="v">2</div><div class="l l-medium"><i></i>Medium</div></div>
+    <div class="kpi k-low"><div class="v">1</div><div class="l l-low"><i></i>Low</div></div>
+    <div class="kpi"><div class="v" style="color:var(--dim)">1</div><div class="l" style="color:var(--dim)"><i style="background:var(--dim)"></i>Info</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="phead">All findings · click a row to inspect</div>
+    <table>
+      <thead><tr><th style="width:100px">Severity</th><th>Finding</th><th style="width:110px">Category</th><th style="width:240px">Location</th></tr></thead>
+      <tbody id="rows">
+        <tr data-sev="critical" data-text="xss html injection unescaped finding fields security" onclick="location.href='v8-supabase-detail.html'">
+          <td><span class="sevchip s-critical">Critical</span></td><td>XSS / HTML injection via unescaped finding fields</td><td style="color:var(--dim)">security</td><td class="path">scripts/generate.mjs:360</td></tr>
+        <tr data-sev="high" data-text="templates directory empty skill reference tech-debt" onclick="location.href='v8-supabase-detail.html'">
+          <td><span class="sevchip s-high">High</span></td><td>templates/ directory is empty despite SKILL.md reference</td><td style="color:var(--dim)">tech-debt</td><td class="path">skills/visual-findings/templates/</td></tr>
+        <tr data-sev="medium" data-text="single hardcoded visual style report type ux theming" onclick="location.href='v8-supabase-detail.html'">
+          <td><span class="sevchip s-medium">Medium</span></td><td>Single hardcoded visual style for every report type</td><td style="color:var(--dim)">ux</td><td class="path">scripts/generate.mjs:87</td></tr>
+        <tr data-sev="medium" data-text="severity filter cannot be reset show all rows bug" onclick="location.href='v8-supabase-detail.html'">
+          <td><span class="sevchip s-medium">Medium</span></td><td>Severity filter cannot be reset to show all rows</td><td style="color:var(--dim)">bug</td><td class="path">scripts/generate.mjs:218</td></tr>
+        <tr data-sev="low" data-text="badge colors fail wcag contrast light theme a11y accessibility" onclick="location.href='v8-supabase-detail.html'">
+          <td><span class="sevchip s-low">Low</span></td><td>Severity badge colors fail WCAG contrast on light theme</td><td style="color:var(--dim)">a11y</td><td class="path">scripts/generate.mjs:158</td></tr>
+        <tr data-sev="info" data-text="theme preference leaks across separate reports localstorage ux" onclick="location.href='v8-supabase-detail.html'">
+          <td><span class="sevchip s-info">Info</span></td><td>Theme preference leaks across separate reports via localStorage</td><td style="color:var(--dim)">ux</td><td class="path">scripts/generate.mjs:213</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+<script>
+function apply(){
+  const q=document.getElementById('q').value.toLowerCase();
+  document.querySelectorAll('#rows tr').forEach(r=>{
+    r.classList.toggle('hidden',!r.dataset.text.includes(q));
+  });
+}
+</script>
+</body>
+</html>

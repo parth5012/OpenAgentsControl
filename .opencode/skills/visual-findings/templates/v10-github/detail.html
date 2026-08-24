@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XSS / HTML injection via unescaped finding fields · Finding #001</title>
+<style>
+  :root{
+    --canvas:#f6f8fa; --card:#fff; --line:#d0d7de; --fg:#1f2328; --dim:#656d76; --dim2:#8c959f;
+    --acc:#0969da; --green:#1a7f37;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--canvas);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.55}
+  header.site{background:#24292f;color:#fff;padding:12px 24px;display:flex;align-items:center;gap:10px}
+  header.site .mark{width:26px;height:26px;border-radius:50%;background:#fff;color:#24292f;display:flex;align-items:center;justify-content:center;font-weight:800}
+  .wrap{max-width:900px;margin:0 auto;padding:20px 16px 44px}
+  a.back{color:var(--dim);text-decoration:none;font-size:13.5px}
+  a.back:hover{color:var(--acc)}
+  .issue{background:var(--card);border:1px solid var(--line);border-radius:6px;margin-top:14px}
+  .ihead{padding:18px 20px;border-bottom:1px solid #eaeef2}
+  .title-row{display:flex;align-items:flex-start;gap:10px}
+  h1{font-size:20px;font-weight:600;line-height:1.3;flex:1}
+  .num{color:var(--dim);font-weight:400}
+  .meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .label{font-size:11.5px;font-weight:600;padding:1px 9px;border-radius:99px}
+  .lb-critical{background:#ffebe9;color:#cf222e} .lb-plain{border:1px solid var(--line);color:var(--dim)}
+  .byline{padding:10px 20px;background:#f6f8fa;border-bottom:1px solid #eaeef2;font-size:13px;color:var(--dim)}
+  .byline b{color:var(--fg);font-weight:600}
+  .ibody{padding:18px 20px}
+  .ibody h2{font-size:14px;font-weight:600;margin:16px 0 8px;padding-top:14px;border-top:1px solid #eaeef2}
+  .ibody h2:first-child{margin-top:0;padding-top:0;border-top:none}
+  p code{font-family:var(--mono);font-size:12px;background:rgba(175,184,193,.2);padding:1px 5px;border-radius:5px}
+  pre{margin-top:10px;background:#f6f8fa;border:1px solid var(--line);border-radius:6px;padding:13px;font-family:var(--mono);font-size:12px;line-height:1.55;overflow-x:auto;color:#24292f}
+  pre b{color:#cf222e} pre i{color:#8c959f;font-style:normal}
+  .callout{display:flex;gap:11px;border:1px solid #d4f4dc;background:#dafbe1;border-radius:6px;padding:13px 15px;margin-top:14px}
+  .callout .ic{color:var(--green);font-weight:800;font-size:15px}
+  .callout b{display:block;font-size:13px;margin-bottom:3px}
+  aside.sidebar{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+  .kv{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-bottom:1px solid #eaeef2}
+  .kv:last-child{border-bottom:none} .kv .k{color:var(--dim)} .kv .v{font-family:var(--mono);font-size:11.5px}
+</style>
+</head>
+<body>
+<header class="site"><span class="mark">VF</span><span style="font-weight:600">visual-findings</span><span style="opacity:.55">/ ui-audit / #001</span></header>
+
+<div class="wrap">
+  <a class="back" href="v10-github.html">← Back to findings list</a>
+
+  <div class="issue">
+    <div class="ihead">
+      <div class="title-row"><h1>XSS / HTML injection via unescaped finding fields <span class="num">#001</span></h1></div>
+      <div class="meta"><span class="label lb-critical">critical</span><span class="label lb-plain">security</span><span class="label lb-plain">ui-audit</span></div>
+    </div>
+    <div class="byline"><b>ui-audit</b> opened this finding on <b>Aug 23, 2026</b> · scripts/generate.mjs:360</div>
+
+    <div class="ibody">
+      <h2>Description</h2>
+      <p>generate.mjs interpolates <code>title</code>, <code>description</code>, <code>recommendation</code> and tags directly into HTML templates. Only <code>codeSnippet</code> passes through escapeHtml(). A finding containing <code>&lt;script&gt;</code> or raw HTML breaks the page layout and executes arbitrary markup when the report is opened.</p>
+
+      <h2>Evidence</h2>
+<pre><i>// current - line 360</i>
+&lt;div class=<b>"description"</b>&gt;
+  &lt;p&gt;<b>${finding.description}</b>&lt;/p&gt;   <i>// unescaped</i>
+&lt;/div&gt;</pre>
+
+      <div class="callout"><span class="ic">✓</span><div><b>Recommended fix</b>Route every string field through escapeHtml() before interpolation — including title, description, recommendation, category, source and tag values.</div></div>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="kv"><span class="k">Severity</span><span class="v" style="color:#cf222e">critical</span></div>
+    <div class="kv"><span class="k">Category</span><span class="v">security</span></div>
+    <div class="kv"><span class="k">Location</span><span class="v" style="color:var(--acc)">generate.mjs:360</span></div>
+    <div class="kv"><span class="k">Tags</span><span class="v">#xss #escaping #generator</span></div>
+  </aside>
+</div>
+</body>
+</html>

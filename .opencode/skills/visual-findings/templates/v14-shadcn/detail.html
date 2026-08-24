@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XSS injection — shadcn dark</title>
+<style>
+  :root{
+    --bg:#09090b; --card:#0f0f12; --card2:#18181b; --line:#27272a;
+    --fg:#fafafa; --dim:#a1a1aa; --dim2:#71717a;
+    --crit:#f87171; --ring:#6366f1;
+    --sans:'Inter',system-ui,sans-serif; --mono:'Cascadia Code',ui-monospace,Menlo,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;padding:36px 24px}
+  .wrap{max-width:800px;margin:0 auto}
+  a.back{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:13px}
+  a.back:hover{color:var(--fg)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-top:16px}
+  .badges{display:flex;gap:7px;margin-bottom:13px}
+  .badge{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:2px 11px;border-radius:999px;border:1px solid}
+  .b-critical{color:var(--crit);border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.08)}
+  .b-soft{color:var(--dim);border-color:var(--line);background:var(--card2)}
+  h1{font-size:20px;font-weight:700;letter-spacing:-.015em;line-height:1.35}
+  .meta{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-top:10px}
+  .meta b{color:var(--ring);font-weight:500}
+  .label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--dim2);margin-bottom:9px}
+  p{color:#d4d4d8}
+  p code{font-family:var(--mono);font-size:12px;background:var(--card2);border:1px solid var(--line);padding:1px 6px;border-radius:5px}
+  .codecard{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:16px}
+  .codehead{display:flex;justify-content:space-between;padding:9px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--dim2)}
+  pre{padding:16px 18px;font-family:var(--mono);font-size:12px;line-height:1.65;color:#d4d4d8;overflow-x:auto}
+  pre b{color:#f87171} pre i{color:var(--dim2);font-style:normal}
+  .fix{border:1px solid rgba(52,211,153,.3);background:rgba(52,211,153,.06);border-radius:12px;padding:17px 20px;margin-top:16px}
+  .fix .label{color:#34d399}
+  .tags{display:flex;gap:7px;margin-top:18px}
+  .tag{font-size:11.5px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:2px 11px;background:var(--card2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="v14-shadcn.html">← Back to findings</a>
+
+  <div class="card">
+    <div class="badges"><span class="badge b-critical">Critical</span><span class="badge b-soft">security</span><span class="badge b-soft">VF-001</span></div>
+    <h1>XSS / HTML injection via unescaped finding fields</h1>
+    <div class="meta">in <b>scripts/generate.mjs</b> : line <b>360</b> · detected 2026-08-23 · ui-audit</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Description</div>
+    <p>generate.mjs interpolates <code>title</code>, <code>description</code>, <code>recommendation</code> and tags directly into HTML templates. Only <code>codeSnippet</code> passes through escapeHtml(). A finding containing <code>&lt;script&gt;</code> or raw HTML breaks the page layout and executes arbitrary markup when the report is opened.</p>
+  </div>
+
+  <div class="codecard">
+    <div class="codehead"><span>generate.mjs — line 360</span><span>typescript</span></div>
+<pre><i>// current</i>
+&lt;div class=<b>"description"</b>&gt;
+  &lt;p&gt;<b>${finding.description}</b>&lt;/p&gt;   <i>// unescaped</i>
+&lt;/div&gt;</pre>
+  </div>
+
+  <div class="fix">
+    <div class="label">Recommended fix</div>
+    <p>Route every string field through escapeHtml() before interpolation — including title, description, recommendation, category, source and tag values.</p>
+    <div class="tags"><span class="tag">#xss</span><span class="tag">#escaping</span><span class="tag">#generator</span></div>
+  </div>
+</div>
+</body>
+</html>

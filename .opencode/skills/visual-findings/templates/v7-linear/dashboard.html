@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audit — visual-findings</title>
+<style>
+  :root{
+    --bg:#0f1011; --side:#131316; --surf:#17181b; --elev:#1d1e22;
+    --line:rgba(255,255,255,.06); --line2:rgba(255,255,255,.10);
+    --fg:#f7f8f8; --dim:#8a8f98; --dim2:#62666d;
+    --acc:#5e6ad2; --accsoft:rgba(94,106,210,.16);
+    --p0:#ff5e5e; --p1:#ff9540; --p2:#f2c94c; --p3:#4cb782; --p4:#8a8f98;
+    --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --mono:'Cascadia Code',ui-monospace,Menlo,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:13px;line-height:1.45;display:flex;min-height:100vh}
+
+  aside{width:216px;flex-shrink:0;background:var(--side);border-right:1px solid var(--line);padding:14px 10px;display:flex;flex-direction:column;gap:2px}
+  .ws{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:6px;font-weight:600;font-size:13px;margin-bottom:12px}
+  .ws .logo{width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#5e6ad2,#8a7ff0);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+  .navlabel{font-size:11px;font-weight:600;color:var(--dim2);padding:10px 10px 6px;text-transform:none}
+  .nav{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:6px;color:var(--dim);cursor:pointer;text-decoration:none}
+  .nav:hover{background:var(--surf);color:var(--fg)}
+  .nav.on{background:var(--accsoft);color:#c3c8f4;font-weight:500}
+  .nav .n{margin-left:auto;font-size:11px;color:var(--dim2)}
+  kbd{font-family:var(--mono);font-size:10px;background:var(--elev);border:1px solid var(--line2);border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:var(--dim)}
+
+  main{flex:1;min-width:0;display:flex;flex-direction:column}
+  header.top{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid var(--line)}
+  .crumb{color:var(--dim)} .crumb b{color:var(--fg);font-weight:600}
+  .searchbox{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--surf);border:1px solid var(--line);border-radius:7px;padding:5px 10px;width:260px;color:var(--dim2);cursor:text}
+  .searchbox input{all:unset;flex:1;font-size:12.5px;color:var(--fg)}
+
+  .pagehead{padding:22px 24px 14px;display:flex;justify-content:space-between;align-items:flex-end}
+  h1{font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .meta{color:var(--dim);font-size:12px;margin-top:3px}
+  .viewtabs{display:flex;gap:2px;padding:0 24px;border-bottom:1px solid var(--line)}
+  .vt{padding:8px 12px;font-size:12.5px;color:var(--dim);border-bottom:2px solid transparent;cursor:pointer}
+  .vt:hover{color:var(--fg)}
+  .vt.on{color:var(--fg);border-bottom-color:var(--acc);font-weight:500}
+  .vt .cnt{font-size:10.5px;background:var(--elev);border-radius:99px;padding:1px 7px;margin-left:5px;color:var(--dim)}
+
+  .list{flex:1}
+  .row{display:flex;align-items:center;gap:12px;padding:9px 24px;border-bottom:1px solid var(--line);cursor:pointer;text-decoration:none;color:inherit;transition:background .08s}
+  .row:hover{background:var(--surf)}
+  .pri{width:14px;height:10px;position:relative;flex-shrink:0}
+  .pri i{position:absolute;bottom:0;width:3px;border-radius:1px;background:currentColor;display:block}
+  .pri i:nth-child(1){left:0;height:4px}.pri i:nth-child(2){left:5px;height:7px}.pri i:nth-child(3){left:10px;height:10px}
+  .pr-critical{color:var(--p0)}.pr-high{color:var(--p1)}.pr-medium{color:var(--p2)}.pr-low{color:var(--p3)}.pr-info{color:var(--p4)}
+  .id{font-family:var(--mono);font-size:11px;color:var(--dim2);width:82px;flex-shrink:0}
+  .rtitle{font-size:13px;font-weight:450;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .labels{display:flex;gap:6px;margin-left:auto;flex-shrink:0}
+  .lab{font-size:10.5px;padding:1px 8px;border-radius:99px;font-weight:500}
+  .lab.cat{background:var(--elev);color:var(--dim)}
+  .lab.critical{background:rgba(255,94,94,.14);color:#ff8a8a}
+  .lab.high{background:rgba(255,149,64,.13);color:#ffb37a}
+  .lab.medium{background:rgba(242,201,76,.12);color:#efd97e}
+  .lab.low{background:rgba(76,183,130,.13);color:#7dd0a5}
+  .lab.info{background:var(--elev);color:var(--dim)}
+  .path{font-family:var(--mono);font-size:11px;color:var(--dim2);width:230px;flex-shrink:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  footer.statusbar{display:flex;gap:18px;padding:9px 24px;border-top:1px solid var(--line);color:var(--dim2);font-size:11.5px;align-items:center}
+</style>
+</head>
+<body>
+<aside>
+  <div class="ws"><span class="logo">VF</span> visual-findings <kbd style="margin-left:auto">⌘K</kbd></div>
+  <div class="navlabel">Workspace</div>
+  <a class="nav on">Audit · visual-findings</a>
+  <a class="nav">All reports <span class="n">12</span></a>
+  <div class="navlabel">Views</div>
+  <a class="nav">Critical first <span class="n">1</span></a>
+  <a class="nav">Security <span class="n">1</span></a>
+  <a class="nav">UX <span class="n">2</span></a>
+  <a class="nav">Bugs <span class="n">1</span></a>
+  <div class="navlabel" style="margin-top:auto">Run</div>
+  <a class="nav" style="color:var(--dim2)">20260823-140512</a>
+</aside>
+
+<main>
+  <header class="top">
+    <span class="crumb">Audit / <b>visual-findings skill</b></span>
+    <div class="searchbox"><input id="q" placeholder="Filter findings…" oninput="apply()"><kbd>/</kbd></div>
+  </header>
+
+  <div class="pagehead">
+    <div><h1>UI Audit — 6 findings</h1><div class="meta">Generated Aug 23, 2026 · source ui-audit</div></div>
+    <kbd>esc to clear</kbd>
+  </div>
+
+  <div class="viewtabs" id="tabs">
+    <span class="vt on" data-sev="" onclick="flt('',this)">All<span class="cnt">6</span></span>
+    <span class="vt" data-sev="critical" onclick="flt('critical',this)">Critical<span class="cnt">1</span></span>
+    <span class="vt" data-sev="high" onclick="flt('high',this)">High<span class="cnt">1</span></span>
+    <span class="vt" data-sev="medium" onclick="flt('medium',this)">Medium<span class="cnt">2</span></span>
+    <span class="vt" data-sev="low" onclick="flt('low',this)">Low<span class="cnt">1</span></span>
+    <span class="vt" data-sev="info" onclick="flt('info',this)">Info<span class="cnt">1</span></span>
+  </div>
+
+  <div class="list" id="list">
+    <a class="row pr-critical" data-sev="critical" data-text="xss html injection unescaped finding fields security generate.mjs" href="v7-linear-detail.html">
+      <span class="pri"><i></i><i></i><i></i></span><span class="id">VF-001</span><span class="rtitle">XSS / HTML injection via unescaped finding fields</span>
+      <span class="labels"><span class="lab critical">Critical</span><span class="lab cat">security</span></span><span class="path">scripts/generate.mjs:360</span></a>
+    <a class="row pr-high" data-sev="high" data-text="templates directory empty skill reference tech-debt docs drift" href="v7-linear-detail.html">
+      <span class="pri"><i></i><i></i><i style="height:10px"></i></span><span class="id">VF-002</span><span class="rtitle">templates/ directory is empty despite SKILL.md reference</span>
+      <span class="labels"><span class="lab high">High</span><span class="lab cat">tech-debt</span></span><span class="path">skills/visual-findings/templates/</span></a>
+    <a class="row pr-medium" data-sev="medium" data-text="single hardcoded visual style report type ux theming" href="v7-linear-detail.html">
+      <span class="pri"><i></i><i style="height:10px"></i></span><span class="id">VF-003</span><span class="rtitle">Single hardcoded visual style for every report type</span>
+      <span class="labels"><span class="lab medium">Medium</span><span class="lab cat">ux</span></span><span class="path">scripts/generate.mjs:87</span></a>
+    <a class="row pr-medium" data-sev="medium" data-text="severity filter cannot be reset show all rows bug state" href="v7-linear-detail.html">
+      <span class="pri"><i></i><i style="height:10px"></i></span><span class="id">VF-004</span><span class="rtitle">Severity filter cannot be reset to show all rows</span>
+      <span class="labels"><span class="lab medium">Medium</span><span class="lab cat">bug</span></span><span class="path">scripts/generate.mjs:218</span></a>
+    <a class="row pr-low" data-sev="low" data-text="badge colors fail wcag contrast light theme accessibility a11y" href="v7-linear-detail.html">
+      <span class="pri"><i style="height:10px"></i></span><span class="id">VF-005</span><span class="rtitle">Severity badge colors fail WCAG contrast on light theme</span>
+      <span class="labels"><span class="lab low">Low</span><span class="lab cat">a11y</span></span><span class="path">scripts/generate.mjs:158</span></a>
+    <a class="row pr-info" data-sev="info" data-text="theme preference leaks across separate reports localstorage ux" href="v7-linear-detail.html">
+      <span class="pri"></span><span class="id">VF-006</span><span class="rtitle">Theme preference leaks across separate reports via localStorage</span>
+      <span class="labels"><span class="lab info">Info</span><span class="lab cat">ux</span></span><span class="path">scripts/generate.mjs:213</span></a>
+  </div>
+
+  <footer class="statusbar"><span>6 findings</span><span>↑↓ navigate</span><span>↵ open</span><span id="shown">6 shown</span></footer>
+</main>
+<script>
+let sev='';
+function flt(s,el){sev=s;document.querySelectorAll('.vt').forEach(t=>t.classList.toggle('on',t===el));apply()}
+function apply(){
+  const q=document.getElementById('q').value.toLowerCase();let n=0;
+  document.querySelectorAll('.row').forEach(r=>{
+    const ok=(!sev||r.dataset.sev===sev)&&(!q||r.dataset.text.includes(q));
+    r.style.display=ok?'':'none'; if(ok)n++;
+  });
+  document.getElementById('shown').textContent=n+' shown';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){sev='';document.querySelectorAll('.vt').forEach((t,i)=>t.classList.toggle('on',i===0));document.getElementById('q').value='';apply()}});
+</script>
+</body>
+</html>

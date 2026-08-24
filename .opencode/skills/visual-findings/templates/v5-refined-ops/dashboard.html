@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Audit — visual-findings</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --text:#111827; --dim:#6b7280; --line:#e5e7eb;
+    --crit:#b91c1c; --critbg:#fee2e2; --high:#c2410c; --highbg:#ffedd5;
+    --med:#854d0e; --medbg:#fef3c7; --low:#0e7490; --lowbg:#cffafe; --info:#475569; --infobg:#e2e8f0;
+    --acc:#2563eb; --accsoft:#dbeafe;
+    --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --mono:'Cascadia Code','JetBrains Mono',Consolas,monospace;
+  }
+  [data-theme="dark"]{
+    --bg:#0f1218; --card:#161a22; --text:#e5e7eb; --dim:#9ca3af; --line:#262c38;
+    --crit:#f87171; --critbg:rgba(248,113,113,.14); --high:#fb923c; --highbg:rgba(251,146,60,.14);
+    --med:#facc15; --medbg:rgba(250,204,21,.13); --low:#22d3ee; --lowbg:rgba(34,211,238,.13); --info:#94a3b8; --infobg:rgba(148,163,184,.14);
+    --acc:#60a5fa; --accsoft:rgba(96,165,250,.14);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.55}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 24px 40px}
+  header.top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px}
+  h1{font-size:21px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+  .dotlive{width:8px;height:8px;border-radius:50%;background:#10b981}
+  .sub{color:var(--dim);font-size:12.5px;margin-top:4px}
+  .theme{all:unset;cursor:pointer;width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:16px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .dist{padding:18px 20px;margin-bottom:14px}
+  .heatbar{display:flex;height:10px;border-radius:99px;overflow:hidden;background:var(--line);margin-bottom:14px}
+  .heatbar span{height:100%}
+  .hb-critical{background:var(--crit)} .hb-high{background:var(--high)} .hb-medium{background:var(--med)} .hb-low{background:var(--low)} .hb-info{background:var(--info)}
+  .legend{display:flex;flex-wrap:wrap;gap:6px}
+  .pill{all:unset;cursor:pointer;font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:99px;border:1px solid transparent;display:inline-flex;align-items:center;gap:7px;transition:opacity .12s}
+  .pill i{width:7px;height:7px;border-radius:50%;display:inline-block;font-style:normal}
+  .pill.critical{color:var(--crit);background:var(--critbg)} .pill.critical i{background:var(--crit)}
+  .pill.high{color:var(--high);background:var(--highbg)} .pill.high i{background:var(--high)}
+  .pill.medium{color:var(--med);background:var(--medbg)} .pill.medium i{background:var(--med)}
+  .pill.low{color:var(--low);background:var(--lowbg)} .pill.low i{background:var(--low)}
+  .pill.info{color:var(--info);background:var(--infobg)} .pill.info i{background:var(--info)}
+  .pill.off{opacity:.35}
+  .toolbar{position:sticky;top:12px;z-index:5;display:flex;gap:10px;align-items:center;padding:11px 14px;margin-bottom:14px;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+  .search{flex:1;min-width:160px;all:unset;font-size:13px;color:var(--text)}
+  .search::placeholder{color:var(--dim)}
+  .sicon{color:var(--dim)}
+  select{all:unset;cursor:pointer;font-size:12.5px;color:var(--text);border-left:1px solid var(--line);padding-left:12px}
+  .clearbtn{all:unset;cursor:pointer;font-size:12px;font-weight:600;color:var(--acc);white-space:nowrap}
+  .clearbtn[hidden]{display:none}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);padding:12px 16px;border-bottom:1px solid var(--line);font-weight:600}
+  td{padding:13px 16px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+  tbody tr{cursor:pointer;transition:background .1s}
+  tbody tr:hover{background:var(--accsoft)}
+  tbody tr:last-child td{border-bottom:none}
+  tr.hidden{display:none}
+  .badge{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:6px}
+  .badge.critical{color:var(--crit);background:var(--critbg)} .badge.high{color:var(--high);background:var(--highbg)}
+  .badge.medium{color:var(--med);background:var(--medbg)} .badge.low{color:var(--low);background:var(--lowbg)} .badge.info{color:var(--info);background:var(--infobg)}
+  .ftitle{font-weight:550}
+  .cat{color:var(--dim);font-size:12.5px}
+  .path{font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+  .empty{padding:30px;text-align:center;color:var(--dim);font-size:13px}
+  footer{margin-top:18px;text-align:center;color:var(--dim);font-size:11.5px}
+  @media print{.toolbar,.theme{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><h1><span class="dotlive"></span> UI Audit — visual-findings</h1><p class="sub">Generated Aug 23, 2026 · 6 findings · source ui-audit · run 20260823-140512-b7a1</p></div>
+    <button class="theme" onclick="tgl()" aria-label="Toggle theme">◐</button>
+  </header>
+
+  <div class="panel dist">
+    <div class="heatbar"><span class="hb-critical" style="width:16.6%"></span><span class="hb-high" style="width:16.6%"></span><span class="hb-medium" style="width:33.4%"></span><span class="hb-low" style="width:16.6%"></span><span class="hb-info" style="width:16.7%"></span></div>
+    <div class="legend">
+      <button class="pill critical" id="p-critical" onclick="flt('critical')"><i></i> Critical · 1</button>
+      <button class="pill high" id="p-high" onclick="flt('high')"><i></i> High · 1</button>
+      <button class="pill medium" id="p-medium" onclick="flt('medium')"><i></i> Medium · 2</button>
+      <button class="pill low" id="p-low" onclick="flt('low')"><i></i> Low · 1</button>
+      <button class="pill info" id="p-info" onclick="flt('info')"><i></i> Info · 1</button>
+    </div>
+  </div>
+
+  <div class="panel toolbar">
+    <span class="sicon">⌕</span><input class="search" id="q" placeholder="Search titles, files, tags…">
+    <select onchange="apply()"><option value="">All categories</option><option value="security">security</option><option value="tech-debt">tech-debt</option><option value="ux">ux</option><option value="bug">bug</option><option value="accessibility">accessibility</option></select>
+    <button class="clearbtn" id="clearBtn" hidden onclick="reset()">✕ Reset filters</button>
+  </div>
+
+  <div class="panel">
+    <table>
+      <thead><tr><th style="width:110px">Severity</th><th>Finding</th><th style="width:130px">Category</th><th style="width:290px">Location</th></tr></thead>
+      <tbody id="rows">
+        <tr data-sev="critical" data-cat="security" onclick="location.href='v5-ops-detail.html'">
+          <td><span class="badge critical">Critical</span></td><td class="ftitle">XSS / HTML injection via unescaped finding fields</td><td class="cat">security</td><td class="path">scripts/generate.mjs:360</td></tr>
+        <tr data-sev="high" data-cat="tech-debt" onclick="location.href='v5-ops-detail.html'">
+          <td><span class="badge high">High</span></td><td class="ftitle">templates/ directory is empty despite SKILL.md reference</td><td class="cat">tech-debt</td><td class="path">skills/visual-findings/templates/</td></tr>
+        <tr data-sev="medium" data-cat="ux" onclick="location.href='v5-ops-detail.html'">
+          <td><span class="badge medium">Medium</span></td><td class="ftitle">Single hardcoded visual style for every report type</td><td class="cat">ux</td><td class="path">scripts/generate.mjs:87</td></tr>
+        <tr data-sev="medium" data-cat="bug" onclick="location.href='v5-ops-detail.html'">
+          <td><span class="badge medium">Medium</span></td><td class="ftitle">Severity filter cannot be reset to show all rows</td><td class="cat">bug</td><td class="path">scripts/generate.mjs:218</td></tr>
+        <tr data-sev="low" data-cat="accessibility" onclick="location.href='v5-ops-detail.html'">
+          <td><span class="badge low">Low</span></td><td class="ftitle">Severity badge colors fail WCAG contrast on light theme</td><td class="cat">a11y</td><td class="path">scripts/generate.mjs:158</td></tr>
+        <tr data-sev="info" data-cat="ux" onclick="location.href='v5-ops-detail.html'">
+          <td><span class="badge info">Info</span></td><td class="ftitle">Theme preference leaks across separate reports</td><td class="cat">ux</td><td class="path">scripts/generate.mjs:213</td></tr>
+      </tbody>
+    </table>
+    <div class="empty" id="empty" hidden>No findings match the current filters.</div>
+  </div>
+
+  <footer>Self-contained report · Ctrl+P for PDF · visual-findings v2 proposal</footer>
+</div>
+<script>
+let sev=null;
+const q=document.getElementById('q'), catSel=document.querySelector('select');
+q.addEventListener('input',apply);
+function flt(s){
+  sev=(sev===s)?null:s;
+  ['critical','high','medium','low','info'].forEach(x=>document.getElementById('p-'+x).classList.toggle('off',sev&&sev!==x));
+  apply();
+}
+function reset(){sev=null;q.value='';catSel.value='';['critical','high','medium','low','info'].forEach(x=>document.getElementById('p-'+x).classList.remove('off'));apply()}
+function apply(){
+  const t=q.value.toLowerCase(), c=catSel.value; let n=0;
+  document.querySelectorAll('#rows tr').forEach(r=>{
+    const ok=(!sev||r.dataset.sev===sev)&&(!c||r.dataset.cat===c)&&(!t||r.textContent.toLowerCase().includes(t));
+    r.classList.toggle('hidden',!ok); if(ok)n++;
+  });
+  document.getElementById('empty').hidden=n>0;
+  document.getElementById('clearBtn').hidden=!sev&&!t&&!c;
+}
+function tgl(){
+  const h=document.documentElement,next=h.getAttribute('data-theme')==='dark'?'light':'dark';
+  h.setAttribute('data-theme',next);localStorage.setItem('vf-theme',next);
+}
+if(localStorage.getItem('vf-theme'))document.documentElement.setAttribute('data-theme',localStorage.getItem('vf-theme'));
+else if(matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.setAttribute('data-theme','dark');
+</script>
+</body>
+</html>
