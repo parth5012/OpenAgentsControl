@@ -2,7 +2,7 @@
 name: StoryWriter
 description: "Story Writer agent specializing in converting loose user requirements and research reports into structured user stories with clear demands, acceptance criteria, and edge cases."
 mode: subagent
-model: omniroute/Planner
+model: omniroute/gemini-flash
 temperature: 0.1
 permission:
   bash:

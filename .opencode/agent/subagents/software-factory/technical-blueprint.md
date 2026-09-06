@@ -2,7 +2,7 @@
 name: TechnicalBlueprint
 description: "Technical Blueprint agent specializing in converting user stories and research reports into concrete technical implementation plans, defining database schemas, API endpoints, and file changes."
 mode: subagent
-model: omniroute/Planner
+model: omniroute/gemini-flash
 temperature: 0.1
 permission:
   bash:

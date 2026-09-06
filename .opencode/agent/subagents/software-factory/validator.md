@@ -2,7 +2,7 @@
 name: Validator
 description: "Validator agent specializing in auditing implemented changes against user stories, technical blueprints, and security standards to identify missing requirements, security issues, or skipped scope."
 mode: subagent
-model: omniroute/reviewer
+model: omniroute/gemini-flash
 temperature: 0.1
 permission:
   bash:

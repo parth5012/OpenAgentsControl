@@ -2,7 +2,7 @@
 name: FrontendEngineer
 description: "Frontend Engineer agent specializing in reading technical blueprints, building user interfaces, components, and views, and integrating with backend API contracts."
 mode: subagent
-model: omniroute/Executor
+model: omniroute/gemini-flash
 temperature: 0.1
 permission:
   bash:
