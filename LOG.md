@@ -1,4 +1,16 @@
-# LOG
+ï»¿# LOG
+
+## 2026-09-01
+
+### serve-html -> serve-content skill upgrade
+- **Status:** Done
+- **What:** Upgraded serve-html skill to serve-content. Added multi-media support (images, videos, PDFs). Upgraded cron-system server with: auto-discovery of static dirs, gzip + cache-control middleware, admin API (list/status/delete endpoints), web upload form with drag-and-drop + password gate, auto-generated index page.
+- **Where:** `.opencode/skills/serve-content/SKILL.md` (OpenCode Setup), `main.py` + `requirements.txt` (cron-system)
+- **Commits (cron-system):** 5 atomic commits (middleware, auto-discovery, admin API, upload+index, import cleanup)
+- **Commits (OpenCode Setup):** `refactor: rename serve-html to serve-content with multi-media support`
+- **Future:** GitHub API persistence for web uploads (documented in SKILL.md as roadmap)
+- **Next:** Set ADMIN_SECRET and UPLOAD_PASSWORD env vars in Vercel, then push cron-system to deploy.
+
 
 ## 2026-08-11
 
@@ -64,7 +76,7 @@
 ### Visual-findings --style generator wiring complete
 **Status:** Done
 **What:** Wired `--style` flag into `generate.mjs`. Created `scripts/styles/` module architecture (`shared.mjs` + 8 style modules: v5-refined-ops, v6-kanban, v7-linear, v8-supabase, v10-github, v12-vercel, v13-master-detail, v14-shadcn). Added dynamic import, CLI alias mapping (e.g. `linear`, `sentry`, `shadcn`), and XSS escaping across all styles.
-**Verified:** TDD test harness `.opencode/skills/visual-findings/scripts/test/generate.test.mjs` running 20 test suites — all 20 pass green (default, all 8 styles x 2 aliases, XSS escaping, unknown-style handling).
+**Verified:** TDD test harness `.opencode/skills/visual-findings/scripts/test/generate.test.mjs` running 20 test suites ï¿½ all 20 pass green (default, all 8 styles x 2 aliases, XSS escaping, unknown-style handling).
 **Updated:** `SKILL.md` bumped to v2.0 with `--style` documentation table.
 
 ### URL / Href link support added across visual-findings reports
@@ -72,3 +84,4 @@
 **What:** Added `url` (and aliases `href`, `link`, `sourceUrl`, `targetUrl`) support to visual-findings schema and generator. In dashboards, URL links render as clickable `target="_blank"` link badges (with `event.stopPropagation()` so row clicks still navigate to details). In detail views/master-detail panes, direct links open source codebase locations, bug trackers, problem statements, or extracted web resources with 1-click.
 **Verified:** TDD test harness `generate.test.mjs` running 21/21 passing test suites.
 **Updated:** `SKILL.md` updated with URL schema property & usage note.
+
