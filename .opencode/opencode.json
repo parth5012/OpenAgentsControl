@@ -51,6 +51,12 @@
         },
         "alpha" : {
           "name": "alpha"
+        },
+        "reviewer": {
+          "name" : "Reviewer"
+        },
+        "Executor" : {
+          "name" : "Executor"
         }
       }
     }
