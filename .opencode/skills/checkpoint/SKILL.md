@@ -35,6 +35,7 @@ Run these steps in order. Stop and ask the user if any step reveals ambiguity.
 5. **Report**
   - Return the PR number and URL so the user can review later.
   - State explicitly: PR was **not** merged — merging is left to the user.
+  - Offer next step: `babysit-pr` to watch checks until green, `merge-pr` to land when ready.
 
 ## Rules
 
