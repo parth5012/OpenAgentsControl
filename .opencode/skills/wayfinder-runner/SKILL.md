@@ -77,6 +77,9 @@ input: <map issue number or URL>
 │      record resolution → close → recompute  │
 │                                             │
 │    AFK tickets: research, task(AFK)         │
+│    >=5 code-changing AFK → stacked PRs      │
+│    (git/gh: 1 branch+PR per ticket,         │
+│    babysit each sub-PR bottom-up)           │
 │                                             │
 │    No human needed. Runs to completion.     │
 └─────────────────┬───────────────────────────┘
@@ -198,6 +201,16 @@ You're free to leave. Phase 2 will run to completion. and continue working  do n
 
 Now all remaining frontier tickets are AFK. No human needed.
 
+**First, decide Single-PR vs Stacked-PR mode:**
+
+```bash
+gh issue list --search "parent:<MAP_NUMBER>" --state open --json number | jq length
+```
+
+- Count open AFK tickets (research tickets that change no code excluded from stack — they just record resolutions).
+- **< 5 code-changing AFK tickets → Single-PR mode** (existing flow: implement, commit per ticket on one branch, one PR at the end via `checkpoint`).
+- **>= 5 code-changing AFK tickets → Stacked-PR mode** (Section 4g below: one branch + one PR per ticket, stacked with `git`/`gh`, babysit each sub-PR).
+
 #### 4a. Claim
 
 ```bash
@@ -299,17 +312,60 @@ Append to map's `## Decisions so far`:
 - [<ticket name>](link) — <one-line resolution summary>
 ```
 
-#### 4e. Create commits for each AFK Ticket
+#### 4e. Create commits for each AFK Ticket (Single-PR mode, < 5 tickets)
 
 ```
 git add .
 git commit -m "{message}"
 ```
 
+Single branch accumulates all AFK commits. At the end of Phase 2, file one PR via `checkpoint` (`/checkpoint` skill: push branch, `gh pr create --base main --head <branch>`).
+
 
 #### 4f. Recompute frontier
 
 After closing, new tickets may be unblocked. Since Phase 2 only runs AFK tickets, and all frontier tickets at this point are AFK, loop back to Step 4a for each new AFK ticket.
+
+> **Re-check the threshold on every recompute:** if newly unblocked tickets push the remaining AFK count to >= 5, switch to Stacked-PR mode (4g) for the rest of the run. Do not collapse an already-started stack back to single-PR.
+
+#### 4g. Stacked-PR mode (AFK >= 5 code-changing tickets)
+
+Use plain `git` + `gh` branch stacking — no external stacking tool. One branch + one PR per ticket, each child's base = its parent branch, in topo order.
+
+**Setup:**
+
+```bash
+git fetch origin main
+git checkout -b wf/<MAP_NUMBER>-<TICKET_N>-<slug> origin/main   # bottom of stack
+```
+
+Branch naming: `wf/<MAP_NUMBER>-<TICKET_N>-<short-slug>` (e.g. `wf/123-124-auth-middleware`).
+
+**Per ticket (in topo-sorted frontier order):**
+
+1. **Branch:** `git checkout -b wf/<MAP>-<N>-<slug> <parent-branch>` (first ticket's parent = `origin/main`, each next ticket's parent = previous ticket's branch). Implement only that ticket's scope. Minimal changes.
+2. **Review gate:** run 4c (CodeReviewer) on that ticket's diff only (`git diff <parent-branch>...HEAD`).
+3. **Commit + push:** `git add -A; git commit -m "<ticket name> (#<N>)"`; `git push -u origin <branch>`.
+4. **File sub-PR:** follow the `checkpoint` skill, but base = parent branch, not main:
+   ```bash
+   gh pr create --base <parent-branch> --head <branch> --title "<ticket name> (#<N>)" --body "Closes #<N>. Part of stack for map #<MAP_NUMBER> (<i>/<total>). Parent: #<parent-PR>. Child: <next or none>."
+   ```
+   Never open a duplicate PR for a branch that already has one — refresh via `gh pr edit` instead.
+5. **Record resolution** (4d): close ticket, append to map's `## Decisions so far`, and include the sub-PR URL in both the ticket close comment and the map line.
+6. **Next ticket:** `git checkout -b` next branch off the branch just pushed (stack grows). Repeat.
+
+**Babysit each sub-PR (bottom-up):**
+
+- After the full stack is filed (or incrementally per sub-PR), run the `babysit-pr` skill on **each** sub-PR starting from the **bottom** of the stack:
+  ```
+  /babysit-pr <sub-PR-number>
+  ```
+- Per sub-PR: poll `gh pr checks`, keep rebased on parent (`git rebase <parent-branch>`, push `--force-with-lease`, then `git rebase` descendants onto the updated branch), apply only concrete reviewer-provided fixes, never merge, never resolve/dismiss threads, never freelance red-CI fixes — per `babysit-pr` rules.
+- Restack rule: whenever a parent branch moves (rebase/fix), immediately rebase each descendant (`git checkout <child>; git rebase <parent>; git push --force-with-lease`) before babysitting the next one up.
+- On hard fail / complex conflict (> 3 files, test/lock/CI files, unclear intent): abort that rebase (`git rebase --abort`), STOP that leg, report files + both-side changes on the sub-PR and its ticket, continue babysitting independent legs if any.
+- Do not merge mid-stack. Merging is bottom-up via `merge-pr` (or left to the human) only after the sub-PR below is merged and the child's base is retargeted to the merged parent's base.
+
+**When NOT to stack:** < 5 code-changing AFK tickets, tickets with overlapping/conflicting scope (serialize instead), or no remote / `gh` unauthenticated (STOP and report per `checkpoint` rules).
 
 ### Step 5 — Final report
 
@@ -326,10 +382,16 @@ Phase 2 — AFK resolved ([[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline
 • [[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cticket-4%3E]]](link) — [[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3Cone-line%20resolution%3E]]
 
 Code changes:
-[[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:block-html:%3Cfiles%20changed%20per%20ticket%3E]]
+<files changed per ticket>
+
+Stacked PRs (only if 4g used, >= 5 AFK tickets):
+| # | Sub-PR | Ticket | Base → Head | Checks | Review fixes |
+|---|--------|--------|-------------|--------|--------------|
+| 1/<total> | #<pr> (link) | [<ticket>](link) | `<parent>` → `<branch>` | passed/failed/pending | <applied/parks> |
 
 All clear — no remaining tickets.
 ```
+- In stacked mode, report each sub-PR with its babysit outcome per `babysit-pr` report format, state explicitly nothing was merged unless `merge-pr` ran, and note restacks performed.
 
 ## Important rules
 
@@ -342,6 +404,8 @@ All clear — no remaining tickets.
 7. **Minimal changes** — implement exactly what the ticket asks, nothing more.
 8. **Review only if code changed** — pure research tickets skip the review gate.
 9. **Human can leave after Phase 1** — Phase 2 is fully autonomous.
+10. **AFK >= 5 code-changing tickets → stacked PRs with git/gh** — one branch + one PR per ticket (base = parent branch), filed per `checkpoint`, each sub-PR babysat bottom-up per `babysit-pr`, merges bottom-up per `merge-pr` or left to human. Re-check the count on every frontier recompute.
+11. **Never merge from babysit** — `babysit-pr` never merges; landing is only via `merge-pr` or manual human merge.
 
 ## Invocation
 
