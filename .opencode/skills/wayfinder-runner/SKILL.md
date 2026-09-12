@@ -191,7 +191,7 @@ Notify human:
 ```
 PHASE 1 COMPLETE — All HITL tickets resolved.
 [[ORCA_RICH_MD:d7de0244b3d30ba326774f4e6de0f508:inline-html:%3CN%3E]] AFK tickets remain. Handing off to autonomous agents.
-You're free to leave. Phase 2 will run to completion.
+You're free to leave. Phase 2 will run to completion. and continue working  do not stop here.Just notify the user once.
 ```
 
 ### Step 4 — Phase 2: AFK (autonomous)
@@ -299,7 +299,7 @@ Append to map's `## Decisions so far`:
 - [<ticket name>](link) — <one-line resolution summary>
 ```
 
-#### 4e. Create commits
+#### 4e. Create commits for each AFK Ticket
 
 ```
 git add .
