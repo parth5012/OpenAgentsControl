@@ -27,6 +27,17 @@
       "commonContext": [
         "core/standards/code"
       ]
+    },
+    "ai-engineer": {
+      "description": "Expert in LLM apps, RAG, agents, vector search, evals, production serving",
+      "commonSubagents": [
+        "subagents/code/coder-agent",
+        "subagents/code/tester"
+      ],
+      "commonTools": [],
+      "commonContext": [
+        "core/standards/code"
+      ]
     }
   }
 }
