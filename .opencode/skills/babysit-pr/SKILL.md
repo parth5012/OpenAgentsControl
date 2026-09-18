@@ -7,7 +7,7 @@ argument-hint: "PR number or branch name (optional — auto-detects current bran
 # Babysit PR
 
 Keep an open PR fresh until CI is green and review threads are worked. Rebase + concrete review fixes only (bots and humans) — never merges, never freelances red-CI fixes, never resolves/dismisses anyone's threads.
-
+If CodeRabbit has not reviewed the pr yet , add a comment mentioning it with the review command and wait for its review
 Companion skills: `checkpoint` files/refreshes the PR, `babysit-pr` (this) watches it, `merge-pr` lands it.
 
 ## When to Use
