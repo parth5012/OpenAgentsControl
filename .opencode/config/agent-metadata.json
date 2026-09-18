@@ -357,6 +357,23 @@
       ],
       "dependencies": []
     },
+    "ai-engineer": {
+      "id": "ai-engineer",
+      "name": "OpenAiEngineer",
+      "category": "subagents/development",
+      "type": "subagent",
+      "version": "1.0.0",
+      "author": "opencode",
+      "tags": [
+        "ai",
+        "llm",
+        "rag",
+        "agents",
+        "vector-search",
+        "evals"
+      ],
+      "dependencies": []
+    },
     "agent-generator": {
       "id": "agent-generator",
       "name": "AgentGenerator",

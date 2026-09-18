@@ -126,6 +126,7 @@ generate detailed commits:
 - Whatverified (tests run, typecheck status)
 - Any decisions made rationale
 - References issues/tickets when applicable
+- When babysitting a pr, if codereview bot skips the review , comment "@coderabbitai review"
 
 **Atomic commits**: one logical change per commit. Never mix unrelated changes. Each commit should be independently understandable and revertable. Write a commit message that explains *what* and *why*, not just *how*.
 
