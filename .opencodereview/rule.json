@@ -1,0 +1,25 @@
+{
+  "rules": [
+    {
+      "path": "**/*.{js,ts}",
+      "rule": "New functions must validate inputs at boundaries, prefer pure functions and explicit dependencies. Flag hardcoded secrets, missing error handling, and functions over 50 lines.",
+      "merge_system_rule": true
+    },
+    {
+      "path": "**/*.{sh}",
+      "rule": "Shell scripts must quote paths with spaces, avoid rm -rf and git reset --hard without guards, prefer set -euo pipefail.",
+      "merge_system_rule": true
+    },
+    {
+      "path": "**/SKILL.md",
+      "rule": "Skills must have valid frontmatter (name, description, argument-hint), When to Use, Workflow steps in order, Rules, Verification. Never invent CLI flags — verify via --help.",
+      "merge_system_rule": true
+    },
+    {
+      "path": "**/*.json",
+      "rule": "Flag hardcoded API keys, tokens, secrets in JSON configs. Suggest env vars instead.",
+      "merge_system_rule": true
+    }
+  ],
+  "exclude": ["**/node_modules/**", "**/dist/**", "**/*.lock", "**/generated/**", "**/testdata/**"]
+}
