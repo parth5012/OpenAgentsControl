@@ -892,17 +892,17 @@
       "description": "PowerPoint MCP Server for presentation manipulation"
     },
      "webmcp": {
-        "type" : "local"
+        "type" : "local",
       "command": ["npx",
         "-y",
         "@jason.today/webmcp@latest",
         "--mcp"
-      ]
+      ],
 
       "enabled" : false,
     },
     "bladebro": {
-        "type": local,
+        "type": "local",
       "command": ["bladebro","mcp"],
       "enabled":false,
     }
