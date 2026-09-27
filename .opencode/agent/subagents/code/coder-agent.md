@@ -4,10 +4,7 @@ description: Executes coding subtasks in sequence, ensuring completion as specif
 mode: subagent
 temperature: 0
 permission:
-  bash:
-    "*": "deny"
-    "bash .opencode/skills/task-management/router.sh complete*": "allow"
-    "bash .opencode/skills/task-management/router.sh status*": "allow"
+  bash: "allow"
   edit:
     "**/*.env*": "deny"
     "**/*.key": "deny"

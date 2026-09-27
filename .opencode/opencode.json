@@ -82,15 +82,7 @@
     },
     "edit": "allow",
     "webfetch": "allow",
-    "bash": {
-      "npm test": "allow",
-      "git status": "allow",
-      "graphify *": "allow",
-      "pytest *": "allow",
-      "poetry *": "allow",
-      "rm": "ask",
-      "rmdir": "ask"
-    },
+    "bash": "allow",
     "lsp": "allow"
   },
   "agent": {
@@ -131,11 +123,7 @@
       "model": "omniroute/Executor",
       "temperature": 0,
       "permission": {
-        "bash": {
-          "*": "deny",
-          "bash .opencode/skills/task-management/router.sh complete*": "allow",
-          "bash .opencode/skills/task-management/router.sh status*": "allow"
-        },
+    "bash": "allow",
         "edit": {
           "**/*.env*": "deny",
           "**/*.key": "deny",
@@ -902,6 +890,21 @@
       "enabled": false,
       "environment": {},
       "description": "PowerPoint MCP Server for presentation manipulation"
+    },
+     "webmcp": {
+        "type" : "local"
+      "command": ["npx",
+        "-y",
+        "@jason.today/webmcp@latest",
+        "--mcp"
+      ]
+
+      "enabled" : false,
+    },
+    "bladebro": {
+        "type": local,
+      "command": ["bladebro","mcp"],
+      "enabled":false,
     }
   }
 
