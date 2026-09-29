@@ -108,6 +108,10 @@ Use these statuses for tasks:
 - `Outage`tool/service unavailable
 - `Review`awaiting review gate
 
+## Remote Usage
+
+agent runs remotely from another machine. When showing artifacts (HTML, images, dashboards, reports), always serve them via cron system project/cloudflare or show images inline — never assume local filesystem access.
+
 ## Artifacts
 
 `BLOCKED.md`write anything can't access execute file, then stop
