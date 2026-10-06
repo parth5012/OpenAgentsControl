@@ -1,0 +1,188 @@
+# Phantoms — atomic facts
+
+- id: phantoms-founded
+  statement: Phantoms (PHA) was created 2026-10-03 19:57Z as an agent company; CEO is `The Hand`.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-03T22:06:00Z
+  access_count: 1
+  last_accessed_at: 2026-10-03T22:06:00Z
+
+- id: phantoms-no-scope
+  statement: As of 2026-10-03 the board has stated no product, mission, or monetization goal for Phantoms.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-03T22:06:00Z
+  access_count: 1
+  last_accessed_at: 2026-10-03T22:06:00Z
+
+- id: phantoms-wake-gap
+  statement: >-
+    All six Hermes reports shipped with no `wakeOnDemand` in runtimeConfig, so work assigned
+    to them had no reliable wake path and could sit forever while appearing healthy.
+    Repaired 2026-10-04 by setting wakeOnDemand true across the roster.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-04T11:55:00Z
+  access_count: 1
+  last_accessed_at: 2026-10-04T11:55:00Z
+
+- id: phantoms-first-execution
+  statement: >-
+    On 2026-10-04 Hermes Developer and Hermes Curator both moved idle -> running on first
+    assignment, which I read as proving the wake -> checkout -> execute path works end to end.
+    That reading was a FALSE POSITIVE: it only proved runs start. Neither run ever completed.
+  status: superseded
+  superseded_by: phantoms-hermes-disposition-defect
+  confidence: high
+  source: api
+  created_at: 2026-10-04T11:55:00Z
+  access_count: 2
+  last_accessed_at: 2026-10-05T09:58:00Z
+
+- id: phantoms-hermes-disposition-defect
+  statement: >-
+    As of 2026-10-05 all six reports run adapterType hermes_local and every run performs tool
+    work but NEVER sets a disposition: the issue stays in_progress with no status write and no
+    substantive comment. After two failed auto-resolutions Paperclip raises a missing_disposition
+    recovery and escalates to board, and the task stalls permanently. Verified across 7 runs on
+    2 agents (Hermes Developer, Hermes Curator). Control variable is clean: the CEO runs
+    opencode_local on the same API and company and completes runs correctly. Consequence: all
+    delegation in this company is currently un-dispatchable. Diagnosis and options recorded in
+    PHA-5. Do NOT re-dispatch work until it is settled.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-05T09:58:00Z
+  access_count: 1
+  last_accessed_at: 2026-10-05T09:58:00Z
+
+- id: phantoms-hermes-ruled-out-causes
+  statement: >-
+    Ruled out by direct test on 2026-10-05, so do not re-investigate: (1) hermes_local
+    paperclipApiUrl http://debian.tail46d59a.ts.net:3100 resolves to 100.87.250.35, this host,
+    HTTP 200 -- not a DNS or reachability fault; (2) gh is authenticated as parth5012 with repo
+    and workflow scopes, and a real repo was created; (3) budgetMonthlyCents and
+    spentMonthlyCents are 0 on every agent, no spend cap throttling; (4) heartbeat.enabled is
+    false company-wide but wakeOnDemand is true, so dispatch was available.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-05T09:58:00Z
+  access_count: 1
+  last_accessed_at: 2026-10-05T09:58:00Z
+
+- id: phantoms-repo-created
+  statement: >-
+    Hermes Developer's first run DID produce real deliverables before stalling: GitHub repo
+    parth5012/phantoms-core (private) created 2026-10-04T18:52:23Z and project phantoms-core
+    created 18:52:21Z. Still missing: codebase.repoUrl is null on the project record, the
+    managedFolder path does not exist on disk, and there is no CI. Preserve these when
+    re-driving PHA-3; do not recreate.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-05T09:58:00Z
+  access_count: 1
+  last_accessed_at: 2026-10-05T09:58:00Z
+
+- id: phantoms-self-assign-locks-issue
+  statement: >-
+    Creating an issue and assigning it to myself auto-spawned a run that took run ownership, so
+    my own heartbeat got 409 Issue checkout conflict and 409 Issue run ownership conflict on
+    PHA-5. Check out or drive a just-created self-assigned issue carefully, or seed it and let
+    the spawned run carry it.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-05T09:58:00Z
+  access_count: 1
+  last_accessed_at: 2026-10-05T09:58:00Z
+
+- id: phantoms-role-mismatch
+  statement: CEO instructions route to CTO/CMO/UXDesigner, but all six Hermes reports have role `general`.
+  status: superseded
+  superseded_by: phantoms-routing-corrected
+  confidence: high
+  source: api
+  created_at: 2026-10-03T22:06:00Z
+  access_count: 2
+  last_accessed_at: 2026-10-04T11:55:00Z
+
+- id: phantoms-routing-corrected
+  statement: >-
+    CEO instructions rewritten 2026-10-04 with a routing table keyed to the six real agent ids
+    and their hermes_local profile mandates. Design is explicitly recorded as having no owner.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-04T11:55:00Z
+  access_count: 1
+  last_accessed_at: 2026-10-04T11:55:00Z
+
+- id: board-setup-request
+  statement: >-
+    On 2026-10-03 23:30Z the board opened PHA-2 "Help me setup this company" with no further
+    detail, superseding the earlier "Hello" first contact.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-04T11:55:00Z
+  access_count: 1
+  last_accessed_at: 2026-10-04T11:55:00Z
+
+- id: board-first-contact
+  statement: The board (user `q49Waw45`) opened PHA-1 and sent only "Hello" at 2026-10-03 22:04Z. PHA-1 was later deleted.
+  status: superseded
+  superseded_by: board-setup-request
+  confidence: high
+  source: api
+  created_at: 2026-10-03T22:06:00Z
+  access_count: 2
+  last_accessed_at: 2026-10-04T11:55:00Z
+
+- id: phantoms-no-projects
+  statement: Phantoms had zero projects and zero registered repositories as of 2026-10-03 22:06Z.
+  status: superseded
+  superseded_by: phantoms-foundation-inflight
+  confidence: high
+  source: api
+  created_at: 2026-10-03T22:06:00Z
+  access_count: 2
+  last_accessed_at: 2026-10-04T11:55:00Z
+
+- id: phantoms-foundation-inflight
+  statement: >-
+    PHA-3 (repo/CI, Hermes Developer) and PHA-4 (operating manual, Hermes Curator) were created
+    2026-10-04 and are STALLED, not progressing. Both were briefed to report a precise blocker
+    rather than manufacture progress. As of 2026-10-05 PHA-3 is blocked with a board-escalated
+    missing_disposition recovery, PHA-4 sits in an invalid in_progress state with no live path,
+    and PHA-2 is blocked on both. Neither produced a disposition because of
+    phantoms-hermes-disposition-defect, not because the briefs were wrong.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-04T11:55:00Z
+  access_count: 2
+  last_accessed_at: 2026-10-05T09:58:00Z
+
+- id: unassigned-run-cannot-write-issues
+  statement: >-
+    In a wake run with no attributed issue, PATCH /api/issues/{id} and
+    POST /api/issues/{id}/comments both return 403 cross_issue_influence_run_context_required
+    even with a valid X-Paperclip-Run-Id and a successful checkout. Document PUT and interaction
+    POST on the same issue succeed. Confirmed three times (2026-10-04, twice on 2026-10-05).
+    Important refinement found 2026-10-05: a blocked issue cannot be checked out at all (422
+    Issue is blocked by unresolved blockers), so you cannot fix your own blocked issue's
+    children from an unassigned run. The one write that reliably works from an unassigned run
+    is company-scoped issue CREATE -- use it to seed durable artifacts. Company-scoped
+    POST /decisions also requires an issue-scoped origin run (422) and is not a workaround.
+  status: active
+  confidence: high
+  source: api
+  created_at: 2026-10-04T11:55:00Z
+  access_count: 3
+  last_accessed_at: 2026-10-05T09:58:00Z

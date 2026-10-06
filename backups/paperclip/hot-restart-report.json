@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "requestedAt": "2026-10-05T10:04:22.367Z",
+  "completedAt": "2026-10-05T10:04:37.577Z",
+  "drainRequired": false,
+  "drainReason": null,
+  "previousServerPid": 35758,
+  "newServerPid": 50214,
+  "previousServerVersion": null,
+  "newServerVersion": "2026.1001.0",
+  "adoptedRunIds": [],
+  "finalizedWhileDownRunIds": [],
+  "lostRunIds": [],
+  "skippedRunIds": [],
+  "runs": []
+}

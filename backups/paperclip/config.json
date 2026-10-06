@@ -1,0 +1,67 @@
+{
+  "$meta": {
+    "version": 1,
+    "updatedAt": "2026-10-03T17:25:01.112Z",
+    "source": "configure"
+  },
+  "database": {
+    "mode": "embedded-postgres",
+    "embeddedPostgresDataDir": "/home/parth/.paperclip/instances/default/db",
+    "embeddedPostgresPort": 54329,
+    "backup": {
+      "enabled": true,
+      "intervalMinutes": 60,
+      "retentionDays": 30,
+      "dir": "/home/parth/.paperclip/instances/default/data/backups"
+    }
+  },
+  "logging": {
+    "mode": "file",
+    "logDir": "/home/parth/.paperclip/instances/default/logs"
+  },
+  "server": {
+    "deploymentMode": "authenticated",
+    "exposure": "private",
+    "bind": "tailnet",
+    "host": "100.87.250.35",
+    "port": 3100,
+    "allowedHostnames": [
+      "100.87.250.35",
+      "127.0.0.1",
+      "debian",
+      "debian.parth5012.com",
+      "debian.tail46d59a.ts.net",
+      "localhost"
+    ],
+    "serveUi": true
+  },
+  "telemetry": {
+    "enabled": true
+  },
+  "updates": {
+    "checkEnabled": true
+  },
+  "auth": {
+    "baseUrlMode": "auto",
+    "disableSignUp": false
+  },
+  "storage": {
+    "provider": "local_disk",
+    "localDisk": {
+      "baseDir": "/home/parth/.paperclip/instances/default/data/storage"
+    },
+    "s3": {
+      "bucket": "paperclip",
+      "region": "us-east-1",
+      "prefix": "",
+      "forcePathStyle": false
+    }
+  },
+  "secrets": {
+    "provider": "local_encrypted",
+    "strictMode": false,
+    "localEncrypted": {
+      "keyFilePath": "/home/parth/.paperclip/instances/default/secrets/master.key"
+    }
+  }
+}

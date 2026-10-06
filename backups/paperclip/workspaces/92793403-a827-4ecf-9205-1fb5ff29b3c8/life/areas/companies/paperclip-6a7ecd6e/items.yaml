@@ -1,0 +1,59 @@
+- id: company-001
+  fact: "Company 6a7ecd6e-49ee-4125-a0cc-41d21c5b1880 is a Paperclip test instance whose only agent is the CEO (92793403). No CTO, CMO, or UX Designer exists yet."
+  category: status
+  timestamp: "2026-10-04"
+  source: "2026-10-04"
+  status: active
+  superseded_by: null
+  related_entities:
+    - companies/paperclip-6a7ecd6e
+  last_accessed: "2026-10-04"
+  access_count: 1
+
+- id: company-002
+  fact: "No projects are registered in this company. Any task created from a chat conversation must belong to a newly created or existing project."
+  category: status
+  timestamp: "2026-10-04"
+  source: "2026-10-04"
+  status: active
+  superseded_by: null
+  related_entities:
+    - companies/paperclip-6a7ecd6e
+  last_accessed: "2026-10-04"
+  access_count: 1
+
+- id: company-003
+  fact: "TES-1 'Chat with Sjdhsid' is a conversation issue created manually by user q49Waw45mhM1zqE5dH6sDpTQmiutQAwG on 2026-10-04; it carries no work request."
+  category: milestone
+  timestamp: "2026-10-04"
+  source: "2026-10-04"
+  status: active
+  superseded_by: null
+  related_entities:
+    - companies/paperclip-6a7ecd6e
+  last_accessed: "2026-10-04"
+  access_count: 1
+
+- id: company-004
+  fact: "The user -> agent send path was verified working on 2026-10-04: comment 91d2d0f6 persisted on TES-1 at 18:41:41Z and woke the CEO with the thread readable. Outbound agent -> composer rendering remains unconfirmed from the agent side."
+  category: status
+  timestamp: "2026-10-04"
+  source: "2026-10-04"
+  status: active
+  superseded_by: null
+  related_entities:
+    - companies/paperclip-6a7ecd6e
+  last_accessed: "2026-10-04"
+  access_count: 1
+
+- id: company-005
+  fact: "Run 784f64f1 on TES-1 was flagged liveness state 'plan_only' and left no comment, no plan document, and no interactions. The correct response was to report verification evidence and ask a focused question, not to fabricate a task or approval card."
+  category: milestone
+  timestamp: "2026-10-04"
+  source: "2026-10-04"
+  status: active
+  superseded_by: null
+  related_entities:
+    - companies/paperclip-6a7ecd6e
+  last_accessed: "2026-10-04"
+  access_count: 1
