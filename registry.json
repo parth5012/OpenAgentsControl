@@ -801,6 +801,29 @@
           ".opencode/skills/context-manager/SKILL.md",
           ".opencode/skills/context-manager/router.sh"
         ]
+      },
+      {
+        "id": "tsdev",
+        "name": "TSDev",
+        "type": "skill",
+        "path": ".opencode/skills/tsdev/SKILL.md",
+        "description": "Host local dev servers on the Tailscale network via serve (tailnet-only) or funnel (public). Use when user says tsdev, tailscale serve, tailscale funnel, host locally, expose port, remote access, share dev server.",
+        "tags": [
+          "tailscale",
+          "serve",
+          "funnel",
+          "hosting",
+          "remote-access",
+          "dev-server"
+        ],
+        "dependencies": [],
+        "category": "standard",
+        "files": [
+          ".opencode/skills/tsdev/SKILL.md",
+          ".opencode/skills/tsdev/reference.md",
+          ".opencode/skills/tsdev/router.sh",
+          ".opencode/skills/tsdev/scripts/tsdev-cli.ts"
+        ]
       }
     ],
     "contexts": [
