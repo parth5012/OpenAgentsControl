@@ -7,7 +7,7 @@ argument-hint: "PR number or branch name (optional — auto-detects current bran
 # Babysit PR
 
 Keep an open PR fresh until CI is green and review threads are worked. Rebase + concrete review fixes only (bots and humans) — never merges, never freelances red-CI fixes, never resolves/dismisses anyone's threads.
-If CodeRabbit has not reviewed the pr yet , add a comment mentioning it with the review command and wait for its review
+If the AI code review bots (self-hosted PR-Agent or CodeRabbit) have not reviewed the PR yet, trigger review: post a comment with `/review` (for PR-Agent) or `@coderabbitai review` (for CodeRabbit) and wait for the review before proceeding.
 Companion skills: `checkpoint` files/refreshes the PR, `babysit-pr` (this) watches it, `merge-pr` lands it.
 
 ## When to Use
@@ -59,7 +59,7 @@ gh api repos/<owner>/<repo>/pulls/<PR_NUMBER>/comments --paginate --jq '.[] | {i
 
 Filter:
 
-- Bot authors: login ends with `[bot]` or author type is `Bot`. Human authors: everyone else — same concrete-only treatment, never reply-argue.
+- Bot authors: login ends with `[bot]` or author type is `Bot` (e.g. `parth-pr-agent[bot]`, `coderabbitai[bot]`, `github-actions[bot]`). Human authors: everyone else — same concrete-only treatment, never reply-argue.
 - Only `OPEN` PR threads; skip comment IDs already addressed earlier in this run (track them in-run).
 - Prefer actionable items: fenced ```suggestion blocks / patch hunks and explicitly named asks (rename X→Y, use Z here).
 
