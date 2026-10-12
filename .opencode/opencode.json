@@ -899,7 +899,7 @@
         "--mcp"
       ],
 
-      "enabled" : false,
+      "enabled" : true,
     },
     "bladebro": {
         "type": "local",
