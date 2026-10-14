@@ -17,6 +17,8 @@ general-purpose agent environment. coding agent follow rules practices when exec
 **Plan-First**: Break complex, multi-step tasks clear steps checkpoints.
 **Safety Zones**: run destructive commands (such`rm -rf``git reset --hard`unless strictly verified requested.
 **Attribution**: Stage commit files only when explicitly asked.
+**Gradle Timeouts**: Run Gradle commands with around 15-minute timeouts (~900s / 900,000 ms) so they do not hang or get stuck.
+**Background Dev Servers**: Whenever spinning up a dev server, run it as a background process (`background: true`) so execution is not stuck in the thread.
 
 ## Verification
 

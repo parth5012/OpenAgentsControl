@@ -33,6 +33,8 @@ For Python package management, always prefer **uv**.
 - **Plan-First**: Break complex, multi-step tasks into clear steps with checkpoints.
 - **Safety Zones**: Do not run destructive commands (such as `rm -rf` or `git reset --hard`) unless strictly verified and explicitly requested.
 - **Attribution**: Only stage and commit files when explicitly asked.
+- **Gradle Timeouts**: Run Gradle commands with around a 15-minute timeout (~900s / 900,000 ms) so they do not hang or get stuck.
+- **Background Dev Servers**: Whenever spinning up a dev server or long-running process, always run it as a background process (`background: true`) so execution does not get stuck in the thread.
 
 ## Verification
 
