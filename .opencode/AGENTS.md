@@ -139,7 +139,7 @@ Generate detailed commits that include:
 - What was verified (tests run, typecheck status)
 - Any decisions made and their rationale
 - References to issues or tickets when applicable
-- When babysitting a PR, if the CodeRabbit bot skips the review, comment `@coderabbitai review`
+- When babysitting a PR, coordinate reviews across OCR (`ocr review`), CodeRabbit (`@coderabbitai review`), and parthpr bot (`/review`), applying concrete fixes before landing.
 
 **Atomic commits**: One logical change per commit. Never mix unrelated changes. Each commit must be independently understandable and revertable. Write commit messages that explain *what* and *why*, not just *how*.
 
