@@ -68,10 +68,12 @@
     }
 
   },
-  "plugin": [
-    "./plugins/claude-mem.js",
+  "plugins": [
     "./plugins/graphify.js",
-    "./plugin/task-timing.ts"
+    "./plugins/open-code-review.ts",
+    "./plugins/coder-verification/index.ts",
+    "./plugins/agent-validator.ts",
+    "./plugins/notify.ts"
   ],
   "permission": {
     "external_directory": {
@@ -906,6 +908,7 @@
       "command": ["bladebro","mcp"],
       "enabled":false,
     }
-  }
+  },
+  "shell": "bash"
 
 }

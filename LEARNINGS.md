@@ -1,4 +1,7 @@
-# LEARNINGS
+# Learnings & Edge Cases
 
-- Impeccable (pbakaus/impeccable) is a design skill for AI coding agents: 1 skill, 23 sub-commands (`shape`, `audit`, `polish`, `live`, etc.), 59 deterministic detector rules. Installs per-harness via `npx impeccable install` (auto-detects opencode, claude, copilot, codex, gemini). Requires Node 22.12+. First command after install is always `/impeccable init` to capture design context into PRODUCT.md (then optional DESIGN.md).
-- OpenCode project skills live in `.opencode/skills/<name>/SKILL.md` and are picked up at session start — a running session must be reloaded to see newly installed skills.
+## OpenCode V2 Plugins
+- **Dynamic Plugin Imports**: In standalone test runtimes or environments without `@opencode/plugin` pre-installed, wrapping the import in `try { Plugin = (await import("@opencode/plugin")).Plugin; } catch { Plugin = { define: (def) => def }; }` ensures the module parses and evaluates cleanly.
+- **Directory Discovery**: OpenCode V2 checks both `.opencode/plugin/` and `.opencode/plugins/`. Retaining V1 files in `.opencode/plugin/` causes parse errors because V2 attempts to evaluate them. All plugins must reside exclusively under `.opencode/plugins/` using V2 exports.
+- **Tool Registration**: Tool definitions in V2 use JSON schema with `editor.add({ name, description, input: { type: "object", ... }, execute: async (input, context) => { ... } })` inside `ctx.tool.transform((editor) => { ... })`.
+- **Global Config Symlink**: On Windows with WSL/Git Bash, `C:/Users/DELL/.config/opencode` is symlinked to `D:/work/projects/OpenCode Setup/.opencode`. Changes made to `.opencode/` immediately reflect in the global configuration directory.

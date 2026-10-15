@@ -1,17 +1,3 @@
-# Claude-Mem Memory Context
-
-<claude-mem-context>
-
-# Memory Context from Past Sessions
-
-*No context yet. Complete the first session for context to appear here.*
-
-Use claude-mem search tools for manual memory queries.
-
-</claude-mem-context>
-
----
-
 # Agent Instructions
 
 ## Framework / Platform

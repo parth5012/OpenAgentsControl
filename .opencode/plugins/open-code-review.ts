@@ -3,8 +3,13 @@
 
 import { spawn } from "node:child_process"
 import { join } from "node:path"
-import { type Plugin, tool } from "@opencode-ai/plugin"
-import type { Plugin as PluginV2 } from "@opencode/plugin"
+
+let Plugin: any;
+try {
+  Plugin = (await import("@opencode/plugin")).Plugin;
+} catch {
+  Plugin = { define: (def: any) => def };
+}
 
 interface ReviewInput {
   commit?: string
@@ -287,11 +292,16 @@ function formatReviewResult(result: RunResult, preview: boolean): string {
   }
 }
 
-const optionalString = (description: string) =>
-  tool.schema.string().optional().describe(description)
+const optionalString = (description: string) => ({
+  type: "string",
+  description,
+})
 
-const optionalPositiveInt = (description: string) =>
-  tool.schema.number().int().positive().optional().describe(description)
+const optionalPositiveInt = (description: string) => ({
+  type: "integer",
+  minimum: 1,
+  description,
+})
 
 const reviewArgs = {
   commit: optionalString("Review one commit against its parent."),
@@ -313,103 +323,14 @@ const reviewArgs = {
   ),
   maxTools: optionalPositiveInt("Maximum tool-call rounds per subtask; OCR enforces a minimum of 50."),
   maxGitProcesses: optionalPositiveInt("Maximum concurrent Git subprocesses."),
-  preview: tool.schema.boolean().optional().describe(
-    "List the files that would be reviewed without calling an LLM.",
-  ),
+  preview: {
+    type: "boolean",
+    description: "List the files that would be reviewed without calling an LLM.",
+  },
 }
 
-export const OpenCodeReviewPlugin: Plugin = async ({ client, worktree }) => {
-  try {
-    await client.app.log({
-      body: {
-        service: "open-code-review",
-        level: "info",
-        message: "OpenCodeReview tools registered",
-      },
-    })
-  } catch {
-    // Best-effort telemetry; a failed log call must not block tool registration.
-  }
-
-  return {
-    config: async (config) => {
-      config.command ??= {}
-      config.command["ocr-review"] ??= {
-        description: "Review code changes with OpenCodeReview",
-        template:
-          "Use the ocr_review tool to review the requested target. " +
-          "Treat the following text as review intent, target details, and business context: $ARGUMENTS. " +
-          "If no target is specified, review the current workspace changes. " +
-          "Report findings by severity with exact file and line references.",
-      }
-      config.command["ocr-health"] ??= {
-        description: "Check OpenCodeReview and its LLM connection",
-        template:
-          "Use the ocr_health tool and explain any configuration problem concisely.",
-      }
-    },
-    tool: {
-      ocr_review: tool({
-        description:
-          "Run OpenCodeReview on workspace changes, one commit, or a ref range. " +
-          "Returns structured line-level findings as JSON. Use preview=true to inspect scope without LLM usage.",
-        args: reviewArgs,
-        async execute(args, context) {
-          const input = args as ReviewInput
-          const cwd = context.worktree || context.directory || worktree
-          const defaultOverallMs = 30 * 60 * 1000
-          const options: RunOptions = {
-            cwd,
-            signal: context.abort,
-            timeoutMs: input.overallTimeoutMinutes !== undefined
-              ? input.overallTimeoutMinutes * 60 * 1000
-              : defaultOverallMs,
-          }
-          const result = await runOcr(buildReviewArgs(input, cwd), options)
-          return formatReviewResult(result, input.preview === true)
-        },
-      }),
-      ocr_health: tool({
-        description:
-          "Check the installed OpenCodeReview version and verify its configured LLM connection.",
-        args: {},
-        async execute(_args, context) {
-          const cwd = context.worktree || context.directory || worktree
-          const [version, llm] = await Promise.allSettled([
-            runOcr(["version"], {
-              cwd,
-              timeoutMs: 30_000,
-              signal: context.abort,
-            }),
-            runOcr(["llm", "test"], {
-              cwd,
-              timeoutMs: 60_000,
-              signal: context.abort,
-            }),
-          ])
-          const rejected = [version, llm].find(
-            (result): result is PromiseRejectedResult => result.status === "rejected",
-          )
-          if (context.abort?.aborted && rejected) {
-            throw rejected.reason
-          }
-
-          const parts: string[] = []
-          if (version.status === "fulfilled") {
-            parts.push(version.value.stdout)
-          } else {
-            parts.push(`Version check failed: ${version.reason?.message ?? "unknown error"}`)
-          }
-          if (llm.status === "fulfilled") {
-            parts.push(llm.value.stdout, llm.value.stderr)
-          } else {
-            parts.push(`LLM connection check failed: ${llm.reason?.message ?? "unknown error"}`)
-          }
-          return parts.filter(Boolean).join("\n")
-        },
-      }),
-    },
-  }
+export const OpenCodeReviewPlugin = async ({ client, worktree }: any) => {
+  return {}
 }
 
 // ---------------------------------------------------------------------------
@@ -523,40 +444,47 @@ async function setupV2(ctx: PluginV2.Context): Promise<void> {
 
   // Like the V1 `??=` guards above, never override commands the user
   // already defined under the same names.
-  const registeredCommands = await ctx.command.list()
-  const commandNames = new Set(registeredCommands.data.map((command) => command.name))
+  if (ctx.command?.list && ctx.command?.transform) {
+    const registeredCommands = await ctx.command.list()
+    const commandList = Array.isArray(registeredCommands?.data)
+      ? registeredCommands.data
+      : Array.isArray(registeredCommands)
+        ? registeredCommands
+        : []
+    const commandNames = new Set(commandList.map((command: any) => command.name))
 
-  await ctx.command.transform((editor) => {
-    // Text-only prompts, matching the V1 $ARGUMENTS templates: spreading the
-    // incoming prompt attachments would violate exactOptionalPropertyTypes
-    // and risk stale attachment offsets after the text rewrite.
-    if (!commandNames.has("ocr-review")) {
-      editor.add({
-        name: "ocr-review",
-        description: "Review code changes with OpenCodeReview",
-        execute: async ({ sessionID, prompt, delivery }) => {
-          await ctx.session.prompt({
-            sessionID,
-            text: `${OCR_REVIEW_COMMAND_TEMPLATE}${prompt.text ?? ""}${OCR_REVIEW_COMMAND_SUFFIX}`,
-            delivery,
-          })
-        },
-      })
-    }
-    if (!commandNames.has("ocr-health")) {
-      editor.add({
-        name: "ocr-health",
-        description: "Check OpenCodeReview and its LLM connection",
-        execute: async ({ sessionID, delivery }) => {
-          await ctx.session.prompt({
-            sessionID,
-            text: OCR_HEALTH_COMMAND_TEMPLATE,
-            delivery,
-          })
-        },
-      })
-    }
-  })
+    await ctx.command.transform((editor: any) => {
+      // Text-only prompts, matching the V1 $ARGUMENTS templates: spreading the
+      // incoming prompt attachments would violate exactOptionalPropertyTypes
+      // and risk stale attachment offsets after the text rewrite.
+      if (!commandNames.has("ocr-review")) {
+        editor.add({
+          name: "ocr-review",
+          description: "Review code changes with OpenCodeReview",
+          execute: async ({ sessionID, prompt, delivery }: any) => {
+            await ctx.session.prompt({
+              sessionID,
+              text: `${OCR_REVIEW_COMMAND_TEMPLATE}${prompt.text ?? ""}${OCR_REVIEW_COMMAND_SUFFIX}`,
+              delivery,
+            })
+          },
+        })
+      }
+      if (!commandNames.has("ocr-health")) {
+        editor.add({
+          name: "ocr-health",
+          description: "Check OpenCodeReview and its LLM connection",
+          execute: async ({ sessionID, delivery }: any) => {
+            await ctx.session.prompt({
+              sessionID,
+              text: OCR_HEALTH_COMMAND_TEMPLATE,
+              delivery,
+            })
+          },
+        })
+      }
+    })
+  }
 }
 
 export default {

@@ -1,4 +1,4 @@
-// graphify OpenCode plugin
+// graphify OpenCode plugin (OpenCode v2)
 // Injects knowledge graph reminder before bash tool calls when graph exists.
 //
 // IMPORTANT: keep reminder string free of backticks/$(...) constructs.
@@ -6,35 +6,45 @@
 // backticks inside double-quoted echo will trigger bash command substitution,
 // which both corrupts tool output silently and executes the graphify
 // command instead of only suggesting. Plain words render fine in opencode's TUI.
-import { existsSync } from "fs";
-import { join } from "path";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
-export const GraphifyPlugin = async ({ directory }) => {
-  let reminded = false;
+let Plugin;
+try {
+  Plugin = (await import("@opencode/plugin")).Plugin;
+} catch {
+  Plugin = { define: (def) => def };
+}
 
-  return {
-    "tool.execute.before": async (input, output) => {
+export default Plugin.define({
+  id: "graphify",
+  async setup(ctx) {
+    let reminded = false;
+    const directory = ctx.location?.directory || process.cwd();
+
+    await ctx.tool.hook("execute.before", async (event) => {
       // 1. If the graph doesn't exist, let the agent use grep/glob normally
       if (!existsSync(join(directory, "graphify-out", "graph.json"))) return;
 
       // 2. BLOCK grep and glob entirely
-      if (input.tool === "grep" || input.tool === "glob") {
-        // Throwing an error cancels the tool execution and sends this exact
-        // message back to the agent so it knows how to fix its mistake.
+      if (event.tool === "grep" || event.tool === "glob") {
         throw new Error(
-          `[graphify instruction] Do not use the '${input.tool}' tool. ` +
+          `[graphify instruction] Do not use the '${event.tool}' tool. ` +
           `A knowledge graph exists at graphify-out/. Please use the 'bash' tool ` +
           `to run: graphify query "<your question>"`
         );
       }
 
       // 3. Keep the gentle reminder for regular bash commands (only once)
-      if (input.tool === "bash" && !reminded) {
-        const reminderMsg = 'echo "[graphify] knowledge graph at graphify-out/. For focused questions, run graphify query with your question (scoped subgraph, usually much smaller than GRAPH_REPORT.md) instead of grepping raw files. Read GRAPH_REPORT.md only for broad architecture context."';
+      if (event.tool === "bash" && !reminded) {
+        const reminderMsg =
+          'echo "[graphify] knowledge graph at graphify-out/. For focused questions, run graphify query with your question (scoped subgraph, usually much smaller than GRAPH_REPORT.md) instead of grepping raw files. Read GRAPH_REPORT.md only for broad architecture context."';
 
-        output.args.command = `${reminderMsg} && ${output.args.command}`;
-        reminded = true;
+        if (event.input && typeof event.input.command === "string") {
+          event.input.command = `${reminderMsg} && ${event.input.command}`;
+          reminded = true;
+        }
       }
-    },
-  };
-};
+    });
+  },
+});

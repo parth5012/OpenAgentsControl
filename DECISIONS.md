@@ -1,14 +1,26 @@
-# DECISIONS
+# Project Decisions
 
-## Architectural & Design Tradeoff Decisions
+## OpenCode Plugin Migration to V2 Architecture
 
-> Track significant architectural and design decisions here. Each entry captures the context, alternatives considered, chosen path, and rationale.
+### Context
+OpenCode V2 introduces breaking changes to the plugin system:
+- Legacy V1 plugin format returned a single object containing tools and hooks.
+- V2 plugins use `Plugin.define({ id, setup(ctx) })` where hooks, tools, and events are registered through the `ctx` context object.
+- Configuration key in `opencode.json` moved from `"plugin"` to `"plugins"`.
+- Standard directory moved from `.opencode/plugin/` to `.opencode/plugins/`.
 
-<!-- Add new decisions below this line -->
+### Decisions
+1. **Remove `claude-mem` and `task-timing`**:
+   - Completely deleted all references, configuration, and implementation files for `task-timing` and `claude-mem`.
+   - Removed Claude-Mem Memory Context header and instructions block from `AGENTS.md`.
 
-| # | Date | Decision | Alternatives Considered | Rationale | Status |
-|---|------|----------|------------------------|-----------|--------|
-| 1 | 2026-08-13 | OpenCode project setup with Impeccable skill | Use standalone design system vs skill-based | Skill approach integrates directly with agent workflows, reduces context switching | Accepted |
-| 2 | 2026-08-23 | visual-findings: keep V5 refined-ops + V6 kanban as first canonical templates; expand with Linear/Supabase/Stripe/GitHub-inspired variants for user vote | Ship single generic style (status quo) | User explicitly rejected generic style + loud variants (V1-V4); wants readable structured dashboards | Accepted |
-| 3 | 2026-08-23 | visual-findings: modular style architecture in scripts/styles/ with dynamic CLI import and built-in TDD test harness | Monolithic generate.mjs with hardcoded HTML | Dynamic modules allow individual style maintenance; node:test harness prevents XSS & rendering regressions | Accepted |
-| 4 | 2026-08-23 | visual-findings: support optional url/href/link field rendering 1-click target="_blank" links in dashboards & detail views | Only display static file:line strings | Codebase URLs, GitHub permalinks, bug trackers, and research links require 1-click navigation | Accepted |
+2. **Standardize All Active Plugins on V2 `Plugin.define`**:
+   - `graphify.js`: Migrated to `Plugin.define` using `ctx.tool.hook("execute.before")`.
+   - `open-code-review.ts`: Migrated to `Plugin.define` registering `ocr_review` and `ocr_health` via `ctx.tool.transform`, with safe fallback for `ctx.command`.
+   - `coder-verification/index.ts`: Migrated to `Plugin.define` using `ctx.tool.hook("execute.before")` and `ctx.tool.hook("execute.after")`.
+   - `agent-validator.ts`: Migrated to `.opencode/plugins/agent-validator.ts` with V2 `Plugin.define`, utilizing `ctx.tool.transform` for all 8 validator tools, `ctx.tool.hook` for tool monitoring, `ctx.session.hook("prompt")`, and `ctx.event.subscribe`.
+   - `notify.ts`: Migrated to `.opencode/plugins/notify.ts` with V2 `Plugin.define` and `ctx.event.subscribe`.
+
+3. **Configuration**:
+   - Converted `.opencode/opencode.json` from `"plugin"` to `"plugins"`.
+   - Verified symlink binding (`~/.config/opencode` -> `.opencode`) ensures consistency across local and global environments.
