@@ -1,0 +1,54 @@
+name: Performance Regression Gate
+
+on:
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  performance-ratchet:
+    name: Check Performance Ratchet
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Benchmark Suite
+        run: |
+          # Replace with your app's actual benchmark runner script
+          # e.g.: npm run benchmark:ci or pytest tests/perf_benchmark.py
+          echo "Running benchmark suite to generate results/current.json..."
+          mkdir -p results
+          # Example fallback if runner writes to results/current.json
+
+      - name: Compare Against Baseline Ratchet
+        id: ratchet
+        run: |
+          python .opencode/skills/deep-performance-engineering/scripts/ratchet.py \
+            --baseline perf-baseline.json \
+            --current results/current.json \
+            --max-regression 5.0 \
+            --markdown-output results/perf-report.md
+
+      - name: Post Performance Report to PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'results/perf-report.md';
+            if (fs.existsSync(reportPath)) {
+              const body = fs.readFileSync(reportPath, 'utf8');
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }
