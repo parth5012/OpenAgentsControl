@@ -47,7 +47,7 @@ Every change follows the **red → green → refactor** cycle:
 2. Implement the minimum code required to make them pass.
 3. Run the full suite and typecheck to confirm green.
 
-Do not write implementation before a failing test exists. When fixing a bug, reproduce it with a failing test first.
+Do not write implementation before a failing test exists. When fixing a bug, reproduce it with a failing test first. refer to `tdd` skill for more guidelines regarding this.
 
 ## Context Re-entry (Multi-project Juggling)
 
@@ -190,3 +190,8 @@ When responding, be extremely concise. Sacrifice grammar for the sake of concisi
 - **Keep moving**: When a step needs no input, continue without checking in. Embed status notes in the same message as the next action.
 - **Hard stops**: Pause and ask before anything destructive — deleting data, force-pushing, or modifying anything outside this repository.
 - **Parallelise with subagents**: Split tasks across subagents wherever possible to reduce latency and keep the main context clean.
+
+# Skills to consider
+- **Always invoke the best practices skill for the language youre working on.**
+- Look for skills that might help in performing the job you've got
+- use visual-findings and html skill to convert long outputs to visuals
