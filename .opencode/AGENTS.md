@@ -72,6 +72,57 @@ When an agent that **built** a feature accumulates a huge context (150k–200k t
 - **Driver**: A fresh, cheap, small-context agent that runs the review gate, monitors CI, and answers questions.
 - **Gate rules**: Auto-fix lint/type findings; approve info-only findings; park human decisions verbatim at the end of the task for the orchestrator to relay. End the subagent turn while the gate runs active background processes to avoid orphaned processes.
 
+## Subagent Delegation & T3 Code Orchestration
+
+**Orchestrator Mindset**: As the primary agent, your role is lead architect and orchestrator. Never bloat the main context with broad codebase sweeps, massive log outputs, deep iterative research, or repetitive coding churn. Proactively delegate subtasks to **OpenCode Inbuilt Subagents** and **T3 Code Orchestrated Agents**.
+
+### When to Use OpenCode Inbuilt Subagents (`subagent` tool)
+
+OpenCode provides specialized, in-process subagents. Spawn them to keep the main conversation lean, fast, and token-efficient:
+
+- **Codebase Exploration (`explore`)**: Use before touching unfamiliar files. Finds files by pattern, searches keywords, maps structures. Do not spam raw `grep` or large file reads in the main thread.
+- **Deep Technical Research (`researcher` / `Researcher`)**: Offload reading documentation, graphify queries, API analysis, and architecture exploration. Runs in read-only mode and returns crisp synthesized findings.
+- **Code Implementation (`coder-agent` / `ship-coder`)**: Hand off atomic, well-specified coding tasks. The subagent writes the code, iterates on syntax, and reports completion without polluting the main turn history.
+- **TDD & Test Engineering (`test-engineer` / `ship-tester`)**: Delegate writing failing tests (red), verifying fixes (green), and regression test generation.
+- **Independent Code Review (`reviewer` / `CodeReviewer` / `ship-reviewer`)**: Spin up dedicated reviewer agents to audit diffs, check security, verify conventions, and catch logic flaws before finalizing work.
+- **Typecheck & Build Validation (`build-agent`)**: Delegate compilation, linting, or type verification.
+- **Documentation (`doc-writer` / `documentation`)**: Authoring docs, ADRs, READMEs, or practical manuals.
+- **Parallel Batch Execution (`batch-executor` / `general` with `background: true`)**: Fan out multiple independent tasks in parallel rather than running them sequentially.
+
+### When to Use T3 Code Orchestrated Agents (`t3-code` tools)
+
+Leverage T3 Code orchestration when tasks require app-owned lifecycle, cross-provider/model flexibility, isolated workspaces, or recurring scheduling:
+
+- **Cross-Model / Tiered Intelligence (`delegate_task`)**:
+  - Discover available provider/model capabilities via `orchestrator_capabilities`.
+  - Delegate heavy-reasoning architecture or tricky debugging to stronger models, or offload routine parsing/linting to faster, cheaper models.
+  - Run background child tasks asynchronously (`mode: "async"`).
+  - Manage multi-round delegated reviews tracking with `taskId` and stable `clientRequestId`.
+- **Worktree-Isolated Feature Threads (`t3_thread_launch`)**:
+  - Whenever starting a significant feature, PR stack, or risky experiment, launch a thread with explicit `workspaceStrategy: {"type": "worktree", "baseRef": "...", "branch": "..."}`.
+  - Keeps git working directories clean, completely preventing cross-agent git state clobbering.
+- **Scheduled & Webhook Automation (`schedule_task`)**:
+  - Set up recurring audits, interval monitors (`{"type": "interval", "everyMs": ...}`), or webhook-triggered pipelines (`{"type": "webhook"}`).
+
+### Task Delegation Matrix
+
+| Task Type | First Choice Mechanism | Recommended Agent / Tool | Why |
+|---|---|---|---|
+| Exploring unfamiliar codebase / symbols | OpenCode Subagent | `explore` (`subagent`) | Avoids dumping large file searches into main context |
+| Researching docs, libraries, APIs | OpenCode Subagent | `researcher` / `general` | Read-only, focused research without context bloat |
+| Implementing discrete feature/ticket | OpenCode Subagent or T3 | `coder-agent` / `delegate_task` | Keeps coding iterations isolated; reports clean intent |
+| Writing tests (TDD) & verification | OpenCode Subagent | `test-engineer` / `ship-tester` | Enforces red-green-refactor without thread noise |
+| Code review & quality gate | OpenCode Subagent | `reviewer` / `CodeReviewer` | Independent, unbiased review against standards |
+| Multi-model task delegation | T3 Orchestration | `delegate_task` | Optimal model selection per problem difficulty |
+| Independent PR branch / stack | T3 Orchestration | `t3_thread_launch` | Dedicated git worktree, isolated lifecycle |
+| Background / Recurring jobs | T3 Orchestration | `schedule_task` | Persistent app scheduler without holding current thread |
+
+### Orchestration Rules
+
+1. **Synthesize, Don't Dump**: Subagents must return actionable conclusions, exact diffs, or structured findings. Never paste their raw tool traces back into the main conversation.
+2. **Parallelize Independent Units**: When facing 2+ non-dependent tasks, launch them simultaneously (`background: true` for OpenCode subagents or async `delegate_task` in T3).
+3. **Escalate to Human Only When Blocked**: Delegate research, drafting, testing, and reviewing first. Bring the human a synthesized decision with clear recommendations and trade-offs.
+
 ## Harness Patterns
 
 - **Teach the agent**: Create docs covering business logic, data models, technology, patterns, practices, and architecture. Cross-link them.

@@ -54,3 +54,19 @@ Place all generated temporary files in`.tmp`project directory.
 Create`DECISIONS.md`every project to track architectural and design tradeoff decisions with rationale, alternatives considered, and why chosen.
 Maintain`RESUME.md`every project for future reference (job applications, portfolio, stakeholder updates). Capture: tech stack, key achievements, challenges solved, measurable outcomes. Add when meaningful milestone reached.
 Create atomic commits for every project — one logical change per commit, never mix unrelated changes. Each commit should be independently understandable and revertable.
+
+## Subagent Delegation & T3 Orchestration
+
+- **Orchestrator Role**: Never pollute main context with broad searches, heavy file reading, or repetitive code loops. Proactively delegate.
+- **OpenCode Subagents**:
+  - Codebase exploration: delegate to `explore` subagent.
+  - Research & graphify inspection: delegate to `researcher` / `general`.
+  - Coding & implementation: delegate isolated tasks to `coder-agent` / `ship-coder`.
+  - TDD & test writing: delegate to `test-engineer` / `ship-tester`.
+  - Code reviews: delegate to `reviewer` / `CodeReviewer`.
+  - Build/typechecks: delegate to `build-agent`.
+  - Batching: run independent subtasks in parallel (`background: true`).
+- **T3 Code Orchestration**:
+  - Cross-model / tiered intelligence: use `delegate_task` across provider/model capabilities.
+  - Worktree isolation: launch isolated feature branches / PR stacks via `t3_thread_launch` with `workspaceStrategy: {"type": "worktree", ...}`.
+  - Recurring & scheduled jobs: use `schedule_task` for persistent intervals or webhooks.
