@@ -19,7 +19,9 @@ For Python package management, always prefer **uv**.
 - **Plan-First**: Break complex, multi-step tasks into clear steps with checkpoints.
 - **Safety Zones**: Do not run destructive commands (such as `rm -rf` or `git reset --hard`) unless strictly verified and explicitly requested.
 - **Attribution**: Only stage and commit files when explicitly asked.
-- **Gradle Timeouts**: Run Gradle commands with around a 15-minute timeout (~900s / 900,000 ms) so they do not hang or get stuck.
+- **No Blocking Polling Loops**: Never run active terminal polling loops (e.g. `while true; do sleep 5; done`) in foreground shell calls. Use T3 Code watchers (`watch_pull_request`), background tasks (`background: true`), or bounded sleep steps.
+- **Gradle Daemons & Timeouts**: Always invoke Gradle with `--no-daemon` and bounded timeouts (`timeout: 900000`) to prevent lingering Gradle daemons that lock file handles or exhaust host memory.
+- **Targeted Code Searches**: Prefer `rg` or `explore` over recursive root searches. Always specify paths or file globs to avoid traversal of build artifacts and large caches.
 - **Background Dev Servers**: Whenever spinning up a dev server or long-running process, always run it as a background process (`background: true`) so execution does not get stuck in the thread.
 
 ## Verification
