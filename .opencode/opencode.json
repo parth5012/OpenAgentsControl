@@ -907,6 +907,19 @@
         "type": "local",
       "command": ["bladebro","mcp"],
       "enabled":false,
+    },
+    "rea": {
+      "type": "local",
+      "command": [
+        "cmd.exe",
+        "/d",
+        "/c",
+        "npx",
+        "-y",
+        "rea-agents@6.7.0",
+        "mcp"
+      ],
+      "enabled": true
     }
   },
   "shell": "bash"
