@@ -1,5 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "experimental": {
+    "subagent_depth": 3
+  },
   "lsp": true,
   "provider": {
     "omniroute": {
@@ -77,6 +80,7 @@
   ],
   "permission": {
     "external_directory": {
+      "/home/parth/**": "allow",
       "D:/notes/raw/chats/**": "allow",
       "D:/work/projects/AI-OS/decisions/**": "allow",
       "D:/work/projects/OpenCode Setup/.opencode/**": "allow",
@@ -85,6 +89,7 @@
     "edit": "allow",
     "webfetch": "allow",
     "bash": "allow",
+    "shell": "allow",
     "lsp": "allow"
   },
   "agent": {

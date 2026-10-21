@@ -6,6 +6,8 @@ description: "On-demand branch checkpoint: commit current work, push branch to G
 
 Snapshot current branch to GitHub so it can be reviewed/merged later, on demand. Never auto-merges — merging is always manual by the user.
 
+**PR body generation:** This skill always defers PR body writing to the `pr` skill (Matt Pocock's PR template). Every PR filed or refreshed here MUST use that template; never compose a PR body ad hoc.
+
 ## When to use
 
 Triggered by `/checkpoint` slash command when user wants current work pushed and a PR opened for later review. Also usable mid-conversation when user asks to "checkpoint", "babysit", "push a PR", "publish this branch", "File and babysit", or "save this so I can review it later".
@@ -28,9 +30,10 @@ Run these steps in order. Stop and ask the user if any step reveals ambiguity.
   - Check if a PR already exists for this branch:
    `gh pr view <current-branch> --json number,url,state`
   - If none exists, create one:
-  `gh pr create --base <default-branch> --head <current-branch> --title "<derived from commit(s)>" --body "<summary>"`
+  `gh pr create --base <default-branch> --head <current-branch> --title "<derived from commit(s)>" --body "<generated via the `pr` skill>"`
+    - **PR body MUST be generated using the `pr` skill (Matt Pocock's PR template).** Invoke/read the `pr` skill and fill its template (`## Summary`, `## Evidence`, `## Merge Danger`) from the commit list/diff since the base branch. Never hand-write or improvise a PR body outside that template.
     - Derive the title from the branch name or the latest commit message; brief bullet body from commit list since the base branch.
-  - If a PR exists and is open, update it with the new commit info (`gh pr edit`) rather than creating a duplicate.
+  - If a PR exists and is open, update it with the new commit info (`gh pr edit`) rather than creating a duplicate, regenerating the PR body via the `pr` skill template when the diff changed.
   - If a PR exists but is closed/merged and new commits landed, ask the user: open a new PR or leave it.
 5. **Report**
   - Return the PR number and URL so the user can review later.
@@ -43,6 +46,7 @@ Run these steps in order. Stop and ask the user if any step reveals ambiguity.
 - Never force-push (`git push --force`) unless explicitly requested.
 - Never touch branches, commits, or files unrelated to the current work.
 - Do not open a duplicate PR for a branch that already has an open PR — refresh it instead.
+- **PR body must always be generated via the `pr` skill (Matt Pocock's PR template).** Any PR filed or refreshed by this skill MUST use the `pr` template (`## Summary`, `## Evidence`, `## Merge Danger`). Never file a PR with an ad-hoc body.
 - If `gh` is not authenticated or no remote is configured, stop and ask the user how to proceed.
 
 ## Verification
@@ -50,5 +54,6 @@ Run these steps in order. Stop and ask the user if any step reveals ambiguity.
 After every run, confirm:
 
 - `gh pr view <current-branch>` returns an open PR owned by the current branch, and report its URL.
+- The PR body follows the `pr` skill template (`## Summary`, `## Evidence`, `## Merge Danger`).
 - `git status --porcelain` is clean after commit/push (unless user had untracked files they asked to leave alone).
 

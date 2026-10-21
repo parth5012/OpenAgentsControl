@@ -72,18 +72,19 @@ export const buildServeArgs = (opts: ServeOpts): string[] => {
   const target = `http://127.0.0.1:${opts.port}`;
   const base = opts.useHttp ? ["--http=80"] : [`--https=${opts.httpsPort}`];
   const bg = opts.bg ? ["--bg"] : [];
+  const pathFlag = opts.pathPrefix ? [`--set-path=${opts.pathPrefix}`] : [];
   // Additive: path prefix mount preserves existing "/" handler
-  return [...bg, ...base, opts.pathPrefix, target];
+  return [...bg, ...base, ...pathFlag, target];
 };
 
 export const buildFunnelArgs = (port: number, pathPrefix: string, httpsPort: number): string[] => {
   const target = `http://127.0.0.1:${port}`;
-  if (pathPrefix !== "/") return [`--https=${httpsPort}`, pathPrefix, target];
+  if (pathPrefix && pathPrefix !== "/") return [`--https=${httpsPort}`, `--set-path=${pathPrefix}`, target];
   return [`--https=${httpsPort}`, target];
 };
 
 export const buildStopArgs = (pathPrefix: string, httpsPort: number): string[] =>
-  [`--https=${httpsPort}`, pathPrefix, "off"];
+  [`--https=${httpsPort}`, `--set-path=${pathPrefix}`, "off"];
 
 // ---------- side effects (isolated) ----------
 
