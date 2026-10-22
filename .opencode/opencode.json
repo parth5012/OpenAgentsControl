@@ -925,7 +925,19 @@
         "mcp"
       ],
       "enabled": true
-    }
+    },
+    "affinity-photo-bridge": {
+          "type": "local",
+          "command": ["npx", "-y", "affinity-mcp"],
+          "args": [],
+          "enabled": true
+        },
+        "openshot": {
+              "type": "local",
+              "command": ["/path/to/openshot-mcp/.venv/bin/python"],
+              "args": ["-m", "openshot_mcp"],
+              "enabled": true
+        },
   },
   "shell": "bash"
 
