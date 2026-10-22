@@ -906,7 +906,7 @@
         "--mcp"
       ],
 
-      "enabled" : true,
+      "enabled" : false,
     },
     "bladebro": {
         "type": "local",
@@ -916,9 +916,6 @@
     "rea": {
       "type": "local",
       "command": [
-        "cmd.exe",
-        "/d",
-        "/c",
         "npx",
         "-y",
         "rea-agents@6.7.0",
@@ -930,13 +927,13 @@
           "type": "local",
           "command": ["npx", "-y", "affinity-mcp"],
           "args": [],
-          "enabled": true
+          "enabled": false
         },
         "openshot": {
               "type": "local",
               "command": ["/path/to/openshot-mcp/.venv/bin/python"],
               "args": ["-m", "openshot_mcp"],
-              "enabled": true
+              "enabled": false
         },
   },
   "shell": "bash"
