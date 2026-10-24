@@ -923,15 +923,16 @@
       ],
       "enabled": true
     },
-    "affinity-photo-bridge": {
+    "photocraft": {
           "type": "local",
-          "command": ["npx", "-y", "affinity-mcp"],
+          "command": ["photocraft-cli", "mcp"],
           "args": [],
-          "enabled": false
+          "enabled": false,
+
         },
         "openshot": {
               "type": "local",
-              "command": ["/path/to/openshot-mcp/.venv/bin/python"],
+              "command": ["D:/work/projects/openshot-mcp/.venv/Scripts/python.exe"],
               "args": ["-m", "openshot_mcp"],
               "enabled": false
         },
