@@ -888,16 +888,17 @@
   },
   "mcp": {
     // https://github.com/charleslukowski/ppt_mcp
-    "powerpoint": {
-      "type": "local",
-      "command": [
-        "python",
-        "D:\\work\\projects\\ppt_mcp\\powerpoint_mcp_server_stable.py"
-      ],
-      "environment": {},
-      "description": "PowerPoint MCP Server for presentation manipulation",
-      "disabled": true
-    },
+    // Commented out — not needed at startup. Uncomment to use.
+    // "powerpoint": {
+    //   "type": "local",
+    //   "command": [
+    //     "python",
+    //     "D:\\work\\projects\\ppt_mcp\\powerpoint_mcp_server_stable.py"
+    //   ],
+    //   "environment": {},
+    //   "description": "PowerPoint MCP Server for presentation manipulation",
+    //   "disabled": true
+    // },
      "webmcp": {
         "type" : "local",
       "command": ["npx",
@@ -921,12 +922,6 @@
         "mcp"
       ]
     },
-        "openshot": {
-              "type": "local",
-              "command": ["D:/work/projects/openshot-mcp/.venv/Scripts/python.exe"],
-              "args": ["-m", "openshot_mcp"],
-              "disabled": true
-        },
   },
   "shell": "bash"
 
