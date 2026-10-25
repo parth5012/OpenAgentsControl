@@ -887,41 +887,34 @@
     }
   },
   "mcp": {
-    // https://github.com/charleslukowski/ppt_mcp
-    // Commented out — not needed at startup. Uncomment to use.
-    // "powerpoint": {
-    //   "type": "local",
-    //   "command": [
-    //     "python",
-    //     "D:\\work\\projects\\ppt_mcp\\powerpoint_mcp_server_stable.py"
-    //   ],
-    //   "environment": {},
-    //   "description": "PowerPoint MCP Server for presentation manipulation",
-    //   "disabled": true
-    // },
-     "webmcp": {
-        "type" : "local",
-      "command": ["npx",
-        "-y",
-        "@jason.today/webmcp@latest",
-        "--mcp"
-      ],
-      "disabled": true
-    },
-    "bladebro": {
+    "servers": {
+      // https://github.com/charleslukowski/ppt_mcp
+      // Commented out — not needed at startup. Uncomment to use.
+      // "powerpoint": {
+      //   "type": "local",
+      //   "command": [
+      //     "python",
+      //     "D:\\work\\projects\\ppt_mcp\\powerpoint_mcp_server_stable.py"
+      //   ],
+      //   "environment": {},
+      //   "description": "PowerPoint MCP Server for presentation manipulation",
+      //   "disabled": true
+      // },
+      "webmcp": {
         "type": "local",
-      "command": ["bladebro","mcp"],
-      "disabled": true
-    },
-        "rea": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "rea-agents@6.7.0",
-        "mcp"
-      ]
-    },
+        "command": ["npx", "-y", "@jason.today/webmcp@latest", "--mcp"],
+        "disabled": true
+      },
+      "bladebro": {
+        "type": "local",
+        "command": ["bladebro", "mcp"],
+        "disabled": true
+      },
+      "rea": {
+        "type": "local",
+        "command": ["npx", "-y", "rea-agents@6.7.0", "mcp"]
+      }
+    }
   },
   "shell": "bash"
 
