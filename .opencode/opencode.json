@@ -921,26 +921,6 @@
         "mcp"
       ]
     },
-    "photocraft": {
-      "type": "local",
-      "command": ["D:/Crafts/PhotoCraft/photocraft-cli.exe", "mcp"],
-      "disabled": true
-    },
-    "pdfcraft": {
-      "type": "local",
-      "command": ["D:/Crafts/PdfCraft/pdfcraft-cli.exe", "mcp", "--compact"],
-      "disabled": true
-    },
-    "filmcraft": {
-      "type": "local",
-      "command": ["D:/Crafts/FilmCraft/filmcraft-cli.exe", "mcp"],
-      "disabled": true
-    },
-    "wordcraft": {
-      "type": "local",
-      "command": ["D:/Crafts/WordCraft/wordcraft-cli.exe", "mcp"],
-      "disabled": true
-    },
         "openshot": {
               "type": "local",
               "command": ["D:/work/projects/openshot-mcp/.venv/Scripts/python.exe"],
