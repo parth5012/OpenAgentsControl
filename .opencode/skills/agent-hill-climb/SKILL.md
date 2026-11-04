@@ -3,9 +3,9 @@ name: agent-hill-climb
 description: Build deterministic, hill-climbable metric systems around any project so coding agents can improve it loop after loop — verify harness, ratchet gates, agent evals, scorecard ledger, and a one-deficiency-per-cycle improvement loop. Use when the user wants a repo to be continuously improvable by agents, a quality/perf ratchet, regression gates, self-improvement loops, or says "make this hill Climbs", "ratchet", "code health gate", "improvement loop", or "agent scorecard".
 argument-hint: "[init | audit | tighten | loop] [--project <path>]"
 metadata:
-  version: 1.0.0
+  version: 1.1.0
   author: parth5012
-  sources: "tmp/deep-research/deterministic-agent-metric-systems.md (AI-OS, 2026-11-04); AlphaEvolve arXiv:2506.13131; RLEF arXiv:2410.02089; David Mar's Ratchet Loops; qntm.org/ratchet; SonarQube new-code gates; Stryker incremental mutation testing"
+  sources: "references/case-studies-and-loops.md; tmp/deep-research/deterministic-agent-metric-systems.md; Theo Browne (@t3dotgg) T3 Code, tstack, sol-loop, babysit-pr; Ralph Driven Development (ghuntley, Luke Parker); GitHub Billing Team (Brittany Ellich); Production-Safe Loops (Daniel Nwaneri); AlphaEvolve arXiv:2506.13131; RLEF arXiv:2410.02089"
 ---
 
 # Agent Hill-Climb
@@ -123,6 +123,19 @@ Anti-goals (write into project's AGENTS/CLAUDE.md on init, they are the loop's l
 5. Editable ratchet/CI/corpus mid-session (Goodhart is the boss fight — freeze then tighten).
 6. Leting the same author self-approve: cycle changes must pass a differently-prompted reviewer pass before promote; the author is the worst-positioned checker.
 
+## Field-Tested Loop Rules (Theo Browne / Enterprise / Community)
+
+Detailed case studies and engineering teardowns are documented in `references/case-studies-and-loops.md`. Enforce these practical rules in every loop:
+
+1. **Cross-Model / Reviewer Split (Theo Browne `sol-loop` pattern)**: Author agent must never be its own reviewer. Hand diffs off to an independent model (GPT Sol, Codex) or bot suite (OCR, CodeRabbit, PR-Agent).
+2. **Strict Review Budget (Theo Browne)**: Cap review loops at **3 rounds maximum** (extendable to 5 only for critical security/auth/data loss). Exit immediately if only nits remain. Stop circular churn early.
+3. **Erect Signs in `AGENTS.md` (Ralph Driven Development)**: When an agent fails, don't just patch the code—add an invariant sign to `AGENTS.md` ("DON'T JUMP"). Shift-left failure prevention so the loop never rediscovers the same bug.
+4. **File-Scoped Micro-Batches (GitHub Billing Team)**: Bounded to 1 file or 1 directory per cycle. Reject broad 50-file prompts; large diffs collapse review quality and human trust.
+5. **Stateless Iteration Leashes (Reddit / Latent Space community)**: Prevent context window poisoning by resetting or pruning context across failed attempts. Pass only `[Goal, Clean Git Diff, Test Error Output]`.
+6. **Pre-Flight Circuit Breakers (Daniel Nwaneri)**: Check hard turn and token limits *before* calling the LLM. Trips raise uncatchable exceptions to prevent runaway invoices ($16k–$50k horror stories).
+7. **CLI > MCP (Luke Parker)**: Prefer standard CLI tools with `--help` and exit codes over complex MCP schemas to conserve tokens and reduce hallucinations.
+8. **Non-Polling Event Waking (Theo Browne `babysit-pr`)**: Never run busy-wait terminal loops (`while true; sleep 5`). Use push-based subscriptions (`watch_pull_request`).
+
 ## Failure-mode table (diagnose the loop by symptom)
 
 | Symptom | Cause | Fix |
@@ -137,12 +150,13 @@ Anti-goals (write into project's AGENTS/CLAUDE.md on init, they are the loop's l
 ## File map
 
 ```
-SKILL.md                <- this file
-templates/ratchet.json  <- seeded rule manifest (limits = current counts)
-templates/ratchet.py    <- counters-executor (pattern + command rules, parseable output)
-templates/ci-gate.yml   <- GitHub Actions wiring for `verify`
-templates/scorecard.csv <- append-only before/after ledger
-templates/loop-prompt.md<- copy-paste session prompt for `loop`
+SKILL.md                          <- this file
+references/case-studies-and-loops.md <- comprehensive field reports, Theo Browne patterns, community practices
+templates/ratchet.json            <- seeded rule manifest (limits = current counts)
+templates/ratchet.py              <- counters-executor (pattern + command rules, parseable output)
+templates/ci-gate.yml             <- GitHub Actions wiring for `verify`
+templates/scorecard.csv           <- append-only before/after ledger
+templates/loop-prompt.md          <- copy-paste session prompt for `loop`
 ```
 
 Sources of the methodology are cited in `archives/deep-research/deterministic-agent-metric-systems.md` inside each project's `tmp/` if the user wants the receipts.
