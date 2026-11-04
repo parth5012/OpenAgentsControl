@@ -1,0 +1,2 @@
+date,session_branch,cycle,deficiency_written_first,metric_name,kind,before,after,verify_hash,files_touched,outcome,revert_reason
+2026-11-04,loop/init-0,0,baseline (init: counts seeded, no tightening),lint-warnings,max,0,0,abc1234,scripts/ratchet.py;scorecard.csv,kept,scaffold-seed

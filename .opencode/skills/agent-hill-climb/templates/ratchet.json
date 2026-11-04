@@ -1,0 +1,51 @@
+{
+  "$doc": "agent-hill-climb ratchet manifest. limits are seeded from CURRENT measured values at scaffold time — tighten later, never relax. 'max' rules fail when live count exceeds limit; 'min' rules fail when live count is under limit.",
+  "rules": [
+    {
+      "name": "todo-count",
+      "kind": "max",
+      "limit": 0,
+      "extractor": {
+        "type": "pattern",
+        "pattern": "TODO|FIXME|HACK(?!le)",
+        "globs": ["--", "*.py", "*.ts", "*.js", "*.tsx"],
+        "exclude_globs": ["tests", ".venv", "node_modules", "dist"]
+      },
+      "hint": "Seeded 0? No: seed from `rg -c 'TODO|FIXME'`. Replace this example line with the real measured count on init."
+    },
+    {
+      "name": "lint-warnings",
+      "kind": "max",
+      "limit": 0,
+      "extractor": {
+        "type": "command",
+        "cmd": "ruff check . --output-format=concord 2>/dev/null || ruff check . | tail -1",
+        "parse": "last_integer"
+      },
+      "hint": "Example for Python; swap the command for the project's real linter (eslint for JS etc.). parse=last_integer takes the final integer in stdout."
+    },
+    {
+      "name": "type-errors",
+      "kind": "max",
+      "limit": 0,
+      "extractor": {
+        "type": "command",
+        "cmd": "mypy . 2>&1 | tail -1",
+        "parse": "last_integer"
+      },
+      "hint": "For TS use \"tsc --noEmit | tail -1\". Seed the real count, then tighten."
+    },
+    {
+      "name": "test-count",
+      "kind": "min",
+      "limit": 0,
+      "extractor": {
+        "type": "command",
+        "cmd": "pytest --collect-only -q 2>&1 | tail -1",
+        "parse": "last_integer"
+      },
+      "hint": "Min-rules never fail-below what exists (tests can't be silently deleted)."
+    }
+  ],
+  "output": "RULE <name>: <current>/<limit> [OK|FAIL]"
+}

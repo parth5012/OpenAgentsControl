@@ -1,0 +1,27 @@
+# agent-hill-climb CI gate — same `verify` the agent runs locally.
+# Principle: ratchet counts (not thresholds) are seeded so this passes on day 1;
+# tightening happens in separate atomic commits; NEVER relax a limit here.
+name: hill-climb-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history so diff-scoped counting works on PRs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # NOTE: on PRs, prefer diff-scoped rules (only counts introduced by the change)
+      # so the gate is always climbable against legacy debt (SonarQube new-code principle).
+      # If your manifest includes diff-aware rules, extract changed files first:
+      #   git diff --name-only origin/${{ github.base_ref }}... > /tmp/changed.txt
+      - name: Verify (tests + typecheck + lint + ratchet)
+        run: |
+          make verify   # or: npm run verify / just verify — must be ONE command
