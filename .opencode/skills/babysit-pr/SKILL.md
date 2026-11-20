@@ -1,6 +1,6 @@
 ---
 name: babysit-pr
-description: "Babysit an open GitHub PR until checks go green: poll checks, rebase-if-behind, trigger and apply concrete review fixes from OCR, CodeRabbit, and parthpr bot (as well as humans), push, report. Use when user says babysit PR, watch PR, keep PR rebased, address review comments. Never merges."
+description: "Babysit an open GitHub PR until checks go green: use T3 watch_pull_request or pr-wait (never own polling), rebase-if-behind, trigger and apply concrete review fixes from OCR, CodeRabbit, and parthpr bot (as well as humans), push, report. Never merges."
 argument-hint: "PR number or branch name (optional — auto-detects current branch PR)"
 ---
 
@@ -8,54 +8,66 @@ argument-hint: "PR number or branch name (optional — auto-detects current bran
 
 Keep an open PR fresh until CI is green and review threads are worked. Rebase + concrete review fixes only (bots and humans) — never merges, never freelances red-CI fixes, never resolves/dismisses anyone's threads.
 
-### Three Review Pillars
-Babysit PR coordinates reviews across three automated reviewers:
-1. **OCR (OpenCodeReview)**: Run local diff review (`ocr review` or `tools.ocr_review`) to catch bugs, security issues, performance problems, and maintainability concerns directly on the diff vs the base branch.
-2. **CodeRabbit**: Monitor `coderabbitai[bot]`. If CodeRabbit has not reviewed the PR yet, trigger review: post a comment with `@coderabbitai review` and wait for its feedback.
-3. **parthpr bot (PR-Agent)**: Monitor `parthpr[bot]` (or `parth-pr-agent[bot]`). If parthpr bot has not reviewed the PR yet, trigger review: post a comment with `/review` (or `@parthpr review`) and wait for its review.
+Coordinates reviews across three automated reviewers plus humans:
+1. **OCR (OpenCodeReview)** — local diff review vs base branch.
+2. **CodeRabbit** — GitHub bot (`coderabbitai[bot]`).
+3. **parthpr bot (PR-Agent)** — GitHub bot (`parthpr[bot]` / `parth-pr-agent[bot]`).
 
-Companion skills: `checkpoint` files/refreshes the PR, `babysit-pr` (this) watches it, `merge-pr` lands it.
+Companion skills: `file-pr` files/refreshes the PR, `babysit-pr` (this) watches it, `merge-pr` lands it, `leaving-pr-comments` formats any comment posted on the user's behalf.
 
-## When to Use
+## Waiting
 
-- After `checkpoint` opened a PR and user says "babysit", "watch PR", "keep it rebased", "wait for checks"
-- When a PR is behind `main` or CI is pending and user wants it maintained until green
-- When reviewers — OCR, bots (CodeRabbit, parthpr bot, Copilot, CodeQL, linters) or humans — left comments and user wants the concrete asks applied
-- When NOT to use: no open PR exists yet → use `checkpoint` first; ready to land → use `merge-pr`
+Never write your own watcher, polling loop, or `sleep` loop. Use one watcher per PR: `watch_pull_request` in T3 Code, `pr-wait` everywhere else. Never run both on the same PR. Every watcher on a GitHub account shares one rate limit.
 
-## Workflow
+### In T3 Code: `watch_pull_request`
 
-Run steps in order. **STOP and report** on hard fail — never force or skip.
+Handle the existing checks and comments first. Then call `watch_pull_request` and end your turn. T3 Code wakes you with a message when a check fails, the required checks pass, someone comments or reviews, or the branch conflicts.
 
-### 1. Validate Environment
+- **Only the thread that owns the PR watches it.** If you are a delegated child task (a reviewer, a Sol round, any `delegate_task` child), never call `watch_pull_request`. The parent owns the PR. Do not watch PRs you are not working on.
+- **A wake is news, not a merge decision.** Check the merge gate yourself.
+- **Unwatch when you hand off.** A watched thread stays in Working and out of the user's inbox. When you stop (ready, blocked, or asking the user a question), call `unwatch_pull_request` first. A merge or close ends the watch on its own.
+- **"Stopped watching, could not read it"** usually means GitHub's rate limit is used up. Run `gh api rate_limit --jq .resources.graphql` before you watch again. If `remaining` is near 0, wait for `reset` with one background command, then watch again. Never watch again in a tight loop.
+
+### Everywhere else: `pr-wait`
+
+Wait with `scripts/pr-wait` from this skill's directory (use its absolute path).
 
 ```bash
-gh auth status
-git rev-parse --is-inside-work-tree
+pr-wait <pr> [--repo owner/name] [--until ready|green|any-change]
 ```
 
-If `gh` not authenticated or not in a git repo → STOP, report, ask user.
+It prints one line per real event. It exits 0 when the `--until` condition is met or the PR merges, 1 when it needs you (a required check failed, conflicts, unresolved threads, PR closed), and 2 on bad input.
 
-### 2. Identify the PR
+- `ready` (default): required checks green, Greptile or Macroscope reviewed the head, and no unresolved threads. Use this to babysit.
+- `green`: required checks only. Use it when the repo has no Greptile or Macroscope.
+- `any-change`: exit on the first event.
 
-Try in order:
+In Claude Code, run it with the Monitor tool (`timeout_ms: 3600000`), so each line wakes you. Without a monitor, run it as one long command. It ends on its own.
 
-1. **User gave PR number**: `gh pr view <number> --json number,url,state,headRefName,baseRefName`
-2. **User gave branch name**: `gh pr view <branch> --json number,url,state,headRefName,baseRefName`
-3. **Auto-detect from current branch**: `gh pr view --json number,url,state,headRefName,baseRefName`
+Start it again after you push, after you handle an exit 1, and after a resume. It remembers what it already reported, so nothing that arrived in between is lost. If it says another pid already watches the PR, do not start a second one. Kill the old one only if its events do not reach you.
 
-Capture: `PR_NUMBER`, `HEAD_BRANCH`, `BASE_BRANCH`.
+With either watcher: when an event needs no action, end your turn without a message. Never post or say "still waiting".
 
-**Validate:**
+## GitHub rate limits
 
-- PR state MUST be `OPEN`. If closed/merged → STOP, report.
-- `BASE_BRANCH` should be `main`. If not → STOP, confirm with user.
+`gh pr create`, `gh pr view`, and `gh pr checks` use GraphQL. When GraphQL is used up, the REST limit is separate and usually still has room. Use `gh api repos/<owner>/<repo>/pulls/<n>` to read a PR, and `gh api repos/<owner>/<repo>/commits/<sha>/check-runs` for checks.
 
-### 3. Trigger & Collect AI Reviews (OCR, CodeRabbit, parthpr bot) and Human Comments
+## Reviews
 
-Run on the first pass and re-check on every watch-loop poll — reviewers may post mid-loop. Same bar for bots and humans.
+Only act on checks and comments newer than the latest push. Verify every bot finding against the source before changing code. Fix real findings and CI failures, distinguish repository failures from infrastructure flakes, and reply with a written reason when dismissing false positives.
+
+If the repo has `.macroscope/check-run-agents/*.md`, read those rules before you reply to a Macroscope finding. Its findings cite them.
+
+CodeRabbit is advisory. Treat its findings like any other finding, but never wait for it and never hold a merge for it.
+
+If a review bot leaves feedback you believe is not worth addressing, reply with a written reason and resolve the comment. Use the `leaving-pr-comments` skill for every comment posted on the user's behalf.
+
+Screenshots and videos help as well, when you have a way to upload them.
+
+### Three Review Pillars (concrete handling)
 
 #### A. Trigger AI Review Bots on GitHub (CodeRabbit & parthpr bot)
+
 Fetch existing PR comments:
 ```bash
 gh repo view --json owner,name
@@ -73,25 +85,27 @@ gh api repos/<owner>/<repo>/issues/<PR_NUMBER>/comments --paginate --jq '.[] | {
 Wait for bot responses before concluding reviews are complete.
 
 #### B. Run OCR Review Locally
+
 Run `ocr review` on the branch diff vs base branch (or use `tools.ocr_review`):
 ```bash
 ocr review --audience agent -b "Babysit PR #${PR_NUMBER} automated review" --from origin/${BASE_BRANCH} --to ${HEAD_BRANCH} -o /tmp/ocr_pr_${PR_NUMBER}.txt
 ```
-Inspect findings in `/tmp/ocr_pr_${PR_NUMBER}.txt` (or structured JSON output):
+Inspect findings in `/tmp/ocr_pr_${PR_NUMBER}.txt`:
 - Target actionable findings with severity `critical`, `high`, or `medium` (discard `low` / cosmetic style nits).
 - Extract concrete fixes (bugs, security risks, missing null guards, error handling, performance regressions).
 
 #### C. Fetch Remote Review Comments (Bots & Humans)
+
 ```bash
 gh pr view <PR_NUMBER> --json reviews,comments
 gh api repos/<owner>/<repo>/pulls/<PR_NUMBER>/comments --paginate --jq '.[] | {id, path, line, author: .user.login, type: .user.type, body: (.body[:500])}'
 ```
 
 Filter:
-- **Bot authors**: login ends with `[bot]` or author type is `Bot` (e.g. `coderabbitai[bot]`, `parthpr[bot]`, `parth-pr-agent[bot]`, `github-actions[bot]`).
+- **Bot authors**: login ends with `[bot]` or author type is `Bot`.
 - **Human authors**: everyone else — same concrete-only treatment, never reply-argue.
-- Only `OPEN` PR threads; skip comment IDs already addressed earlier in this run (track them in-run).
-- Prefer actionable items: fenced ```suggestion blocks / patch hunks and explicitly named asks (rename X→Y, use Z here).
+- Only `OPEN` PR threads; skip comment IDs already addressed earlier in this run.
+- Prefer actionable items: fenced ```suggestion blocks / patch hunks and explicitly named asks.
 
 #### D. Apply Fixes (concrete fixes only)
 
@@ -108,53 +122,49 @@ Filter:
 - Push — plain `git push`, or `--force-with-lease` only right after a rebase — and continue the watch loop.
 - Never mark threads resolved/dismissed to silence them; never reply-chat or argue with reviewers. Human "Request changes" reviews still need a human re-review after fixes — flag as action needed in Report.
 
-### 4. Bounded Watch Loop
+## Base branch and merging
+
+Keep an eye on changes to `main` and rebase when needed. `pr-wait` reports when new base commits touch this PR's files, and when the PR becomes BEHIND or DIRTY. `watch_pull_request` reports conflicts only, so check for BEHIND yourself before you call the PR ready.
+
+If an overlapping PR makes this one obsolete, stop monitoring, report it to the user, and ask before closing the PR unless closure was explicitly authorized.
+
+If nothing has changed, stay quiet rather than posting filler comments. Stop when `pr-wait` exits 0, or in T3 Code when the merge gate passes on the latest head. Merge only when the user explicitly requested it; otherwise report that the PR is ready. Right before a merge, run `git fetch` and check the PR again. Never merge when it is BEHIND or DIRTY, or when base commits that landed after the last green run touch this PR's files. Rebase, push, and wait for green again.
+
+## Workflow (bounded loop, non-T3 fallback)
 
 Limits: poll every ~2 min, max ~30 min (~15 polls). Exit early on green / hard fail / complex conflict.
 
 Each poll:
-
 ```bash
 git fetch origin main
 gh pr view <PR_NUMBER> --json state,mergeStateStatus,url
 gh pr checks <PR_NUMBER> --json name,state,conclusion
 git rev-list --count HEAD..origin/main
 ```
-
-Also re-run Step 3 each poll:
-- Check for newly posted review comments from CodeRabbit, parthpr bot, or humans.
-- If new commits were pushed or branch rebased, re-run OCR (`ocr review --audience agent --from origin/${BASE_BRANCH} --to ${HEAD_BRANCH}`) to verify no new issues were introduced.
+Also re-run the Review pillars each poll.
 
 Decide:
-
-- **New concrete review suggestions (OCR, CodeRabbit, parthpr bot, humans)**: apply per Step 3, push, continue loop.
-- **Behind main** (`rev-list` count > 0): rebase + push, then continue loop:
-  ```bash
-  git rebase origin/main
-  git push --force-with-lease origin <HEAD_BRANCH>
-  ```
-- **Checks all pass + not behind + no unapplied concrete review items (OCR, CodeRabbit, parthpr bot, humans)**: exit SUCCESS, go to Report.
+- **New concrete review suggestions**: apply per above, push, continue loop.
+- **Behind main** (`rev-list` count > 0): rebase + push, then continue loop.
+- **Checks all pass + not behind + no unapplied concrete review items**: exit SUCCESS, go to Report.
 - **Checks pending or reviews pending**: wait ~2 min, next poll. If still pending at 30 min cap → exit TIMEOUT, report.
-- **Any check failed**: STOP, go to Report as FAILED. The Step 3 review-fix path is the only code-edit exception — do not invent fixes for red CI.
-- **No checks configured**: treat as SUCCESS if not behind and no pending review items (not all repos have CI).
-- **`gh pr checks` errors**: warn and continue to next poll, do not fail the loop on one transient error.
+- **Any check failed**: STOP, go to Report as FAILED. The review-fix path is the only code-edit exception — do not invent fixes for red CI.
+- **No checks configured**: treat as SUCCESS if not behind and no pending review items.
+- **`gh pr checks` errors**: warn and continue to next poll.
 
-**Rebase conflict policy (same as `merge-pr`):**
-
+**Rebase conflict policy:**
 1. `git diff --name-only --diff-filter=U` — list conflicted files.
 2. Trivial only (whitespace, import order, non-overlapping additions): resolve, `git add`, `git rebase --continue`.
 3. Otherwise ABORT immediately: `git rebase --abort`, STOP, report files + both-side changes.
 
-**Always abort rebase and report on:**
-
+Always abort rebase and report on:
 - More than 3 files conflicted
 - Conflicts in test files, `package.json`, lock files, CI configs
 - Any doubt about preserving intent
 
-### 5. Report
+## Report
 
 Success:
-
 ```
 👀 PR #<number> green — <URL>
    Branch: <HEAD_BRANCH> → main (up to date)
@@ -165,7 +175,6 @@ Success:
 ```
 
 Failed / timeout / conflict:
-
 ```
 ⚠️ PR #<number> babysit STOPPED — <reason>
    URL: <PR URL>
@@ -183,7 +192,7 @@ State explicitly: PR was **not** merged — `merge-pr` or manual merge is still 
 ## Rules
 
 - **Never merge, never use `gh pr merge`.** Hand off to `merge-pr`/user.
-- **Code edits allowed ONLY for concrete reviewer-provided fixes (Step 3: OCR findings, CodeRabbit, parthpr bot, and human reviews).** Never freelance fixes for red CI.
+- **Code edits allowed ONLY for concrete reviewer-provided fixes.** Never freelance fixes for red CI.
 - **Never reply-argue with reviewers, human or bot.** Apply concrete asks or park them.
 - **Never `git push --force`** — always `--force-with-lease`, and only after a rebase.
 - **Never auto-resolve complex conflicts.** Abort and report.
@@ -195,7 +204,6 @@ State explicitly: PR was **not** merged — `merge-pr` or manual merge is still 
 ## Verification
 
 After every run, confirm:
-
 - `gh pr view <PR_NUMBER> --json state` returns `OPEN`
 - Final `gh pr checks` outcome reported accurately (passed / failed names / timeout)
 - OCR review completed and clean or concrete high/medium findings addressed

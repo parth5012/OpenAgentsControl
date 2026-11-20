@@ -8,7 +8,7 @@ argument-hint: "<map-number-or-url>"
 
 Full lifecycle for a wayfinder map: execute it (HITL first, AFK second), self-review each AFK ticket's diff until clean, file PRs (single or stacked by AFK count), then babysit every PR to green with OCR + CodeRabbit + parthpr bot. **Never merges** — hands off to `merge-pr`.
 
-Companion skills: `wayfinder-runner` (map execution semantics), `code-review`, `ocr-review`, `checkpoint`, `babysit-pr`, `merge-pr`, `pr` (PR body template), `grilling`.
+Companion skills: `wayfinder-runner` (map execution semantics), `code-review`, `ocr-review`, `file-pr`, `babysit-pr`, `merge-pr`, `pr` (PR body template), `grilling`.
 
 ## When to use
 
@@ -19,7 +19,7 @@ Companion skills: `wayfinder-runner` (map execution semantics), `code-review`, `
 ## When NOT to use
 
 - Map only has HITL tickets and no code changes → use `wayfinder-runner`
-- Work isn't committed yet / no map → use `checkpoint` / `wayfinder-runner`
+- Work isn't committed yet / no map → use `file-pr` / `wayfinder-runner`
 - Ready to land → use `merge-pr`
 
 ## Ticket types recap
@@ -63,7 +63,7 @@ Follow `wayfinder-runner` Phase 1 exactly:
 
 Count open AFK **code-changing** tickets (research tickets that change no code are excluded from the stack count):
 
-- **< 5 code-changing AFK → Single-PR mode**: implement each ticket, self-review, commit per ticket on one branch, file one PR at the end via `checkpoint`.
+- **< 5 code-changing AFK → Single-PR mode**: implement each ticket, self-review, commit per ticket on one branch, file one PR at the end via `file-pr`.
 - **≥ 5 code-changing AFK → Stacked-PR mode**: one branch + one sub-PR per ticket (base = parent branch), stacked with plain `git`/`gh`.
 
 ### Per AFK ticket loop
@@ -117,7 +117,7 @@ Per ticket (in topo order):
 2. **Implement** only that ticket's scope (minimal).
 3. **Self-review loop** (Step C) on `git diff <parent>...HEAD`.
 4. **Commit + push:** `git add -A; git commit -m "<ticket name> (#<N>)"; git push -u origin <branch>`.
-5. **File sub-PR** via `checkpoint` semantics, but base = parent branch:
+5. **File sub-PR** via `file-pr` semantics, but base = parent branch:
    ```bash
    gh pr create --base <parent-branch> --head <branch> \
      --title "<ticket name> (#<N>)" \
@@ -131,7 +131,7 @@ Per ticket (in topo order):
 
 ### Single-PR mode tail
 
-After all AFK tickets: file/refresh one PR via `checkpoint` (`gh pr create --base main --head <branch>`), PR body via `pr` skill template. Then babysit that PR.
+After all AFK tickets: file/refresh one PR via `file-pr` (`gh pr create --base main --head <branch>`), PR body via `pr` skill template. Then babysit that PR.
 
 ## Babysit every filed PR
 

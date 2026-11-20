@@ -208,7 +208,7 @@ gh issue list --search "parent:<MAP_NUMBER>" --state open --json number | jq len
 ```
 
 - Count open AFK tickets (research tickets that change no code excluded from stack — they just record resolutions).
-- **< 5 code-changing AFK tickets → Single-PR mode** (existing flow: implement, commit per ticket on one branch, one PR at the end via `checkpoint`).
+- **< 5 code-changing AFK tickets → Single-PR mode** (existing flow: implement, commit per ticket on one branch, one PR at the end via `file-pr`).
 - **>= 5 code-changing AFK tickets → Stacked-PR mode** (Section 4g below: one branch + one PR per ticket, stacked with `git`/`gh`, babysit each sub-PR).
 
 #### 4a. Claim
@@ -319,7 +319,7 @@ git add .
 git commit -m "{message}"
 ```
 
-Single branch accumulates all AFK commits. At the end of Phase 2, file one PR via `checkpoint` (`/checkpoint` skill: push branch, `gh pr create --base main --head <branch>`).
+Single branch accumulates all AFK commits. At the end of Phase 2, file one PR via `file-pr` (`/file-pr` skill: push branch, `gh pr create --base main --head <branch>`).
 
 
 #### 4f. Recompute frontier
@@ -346,7 +346,7 @@ Branch naming: `wf/<MAP_NUMBER>-<TICKET_N>-<short-slug>` (e.g. `wf/123-124-auth-
 1. **Branch:** `git checkout -b wf/<MAP>-<N>-<slug> <parent-branch>` (first ticket's parent = `origin/main`, each next ticket's parent = previous ticket's branch). Implement only that ticket's scope. Minimal changes.
 2. **Review gate:** run 4c (CodeReviewer) on that ticket's diff only (`git diff <parent-branch>...HEAD`).
 3. **Commit + push:** `git add -A; git commit -m "<ticket name> (#<N>)"`; `git push -u origin <branch>`.
-4. **File sub-PR:** follow the `checkpoint` skill, but base = parent branch, not main:
+4. **File sub-PR:** follow the `file-pr` skill, but base = parent branch, not main:
    ```bash
    gh pr create --base <parent-branch> --head <branch> --title "<ticket name> (#<N>)" --body "Closes #<N>. Part of stack for map #<MAP_NUMBER> (<i>/<total>). Parent: #<parent-PR>. Child: <next or none>."
    ```
@@ -365,7 +365,7 @@ Branch naming: `wf/<MAP_NUMBER>-<TICKET_N>-<short-slug>` (e.g. `wf/123-124-auth-
 - On hard fail / complex conflict (> 3 files, test/lock/CI files, unclear intent): abort that rebase (`git rebase --abort`), STOP that leg, report files + both-side changes on the sub-PR and its ticket, continue babysitting independent legs if any.
 - Do not merge mid-stack. Merging is bottom-up via `merge-pr` (or left to the human) only after the sub-PR below is merged and the child's base is retargeted to the merged parent's base.
 
-**When NOT to stack:** < 5 code-changing AFK tickets, tickets with overlapping/conflicting scope (serialize instead), or no remote / `gh` unauthenticated (STOP and report per `checkpoint` rules).
+**When NOT to stack:** < 5 code-changing AFK tickets, tickets with overlapping/conflicting scope (serialize instead), or no remote / `gh` unauthenticated (STOP and report per `file-pr` rules).
 
 ### Step 5 — Final report
 
@@ -404,7 +404,7 @@ All clear — no remaining tickets.
 7. **Minimal changes** — implement exactly what the ticket asks, nothing more.
 8. **Review only if code changed** — pure research tickets skip the review gate.
 9. **Human can leave after Phase 1** — Phase 2 is fully autonomous.
-10. **AFK >= 5 code-changing tickets → stacked PRs with git/gh** — one branch + one PR per ticket (base = parent branch), filed per `checkpoint`, each sub-PR babysat bottom-up per `babysit-pr`, merges bottom-up per `merge-pr` or left to human. Re-check the count on every frontier recompute.
+10. **AFK >= 5 code-changing tickets → stacked PRs with git/gh** — one branch + one PR per ticket (base = parent branch), filed per `file-pr`, each sub-PR babysat bottom-up per `babysit-pr`, merges bottom-up per `merge-pr` or left to human. Re-check the count on every frontier recompute.
 11. **Never merge from babysit** — `babysit-pr` never merges; landing is only via `merge-pr` or manual human merge.
 
 ## Invocation

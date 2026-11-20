@@ -900,20 +900,20 @@
       //   "description": "PowerPoint MCP Server for presentation manipulation",
       //   "disabled": true
       // },
-      "webmcp": {
-        "type": "local",
-        "command": ["npx", "-y", "@jason.today/webmcp@latest", "--mcp"],
-        "disabled": true
-      },
-      "bladebro": {
-        "type": "local",
-        "command": ["bladebro", "mcp"],
-        "disabled": true
-      },
-      "rea": {
-        "type": "local",
-        "command": ["npx", "-y", "rea-agents@6.7.0", "mcp"]
-      }
+      // "webmcp": {
+      //   "type": "local",
+      //   "command": ["npx", "-y", "@jason.today/webmcp@latest", "--mcp"],
+      //   "disabled": true
+      // },
+      // "bladebro": {
+      //   "type": "local",
+      //   "command": ["bladebro", "mcp"],
+      //   "disabled": true
+      // },
+      // "rea": {
+      //   "type": "local",
+      //   "command": ["npx", "-y", "rea-agents@6.7.0", "mcp"]
+      // }
     }
   },
   "shell": "bash"

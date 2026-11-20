@@ -6,14 +6,15 @@ argument-hint: "PR number or branch name to merge (optional — auto-detects cur
 
 # Merge PR
 
-Safely merge a GitHub PR into `main` using rebase strategy, push to `origin/main`, and clean up. This is the merge counterpart to the `checkpoint` skill (which creates/updates PRs).
+Safely merge a GitHub PR into `main` using rebase strategy, push to `origin/main`, and clean up. This is the merge counterpart to the `file-pr` skill (which creates/updates PRs).
 
 ## When to Use
 
-- After `checkpoint` has created a PR and it's ready to land
+- After `file-pr` has created a PR and it's ready to land
+- `full-send` automates this end-to-end; use `merge-pr` when landing manually
 - When user says "merge", "land this PR", "ship it", "merge and push", "finalize"
 - When an agent has completed work on a worktree branch and needs to get it into main
-- When NOT to use: if work isn't committed/pushed yet → use `checkpoint` first
+- When NOT to use: if work isn't committed/pushed yet → use `file-pr` first
 
 ## Workflow
 
@@ -195,7 +196,7 @@ After failure, report:
 - **Never merge to a branch other than `main`** unless user explicitly confirms.
 - **Never delete `main` branch** under any circumstances.
 - **Always clean up** — delete local branch, remote branch, and worktree after successful merge.
-- **Checkpoint first if uncommitted work exists.** If `git status --porcelain` shows changes, tell user to run `checkpoint` first.
+- **Checkpoint first if uncommitted work exists.** If `git status --porcelain` shows changes, tell user to run `file-pr` first.
 
 ## Common Agent Mistakes This Skill Prevents
 
