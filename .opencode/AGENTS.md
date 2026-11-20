@@ -11,6 +11,7 @@ For Python package management, always prefer **uv**.
 - **Understand First**: Check the project's graphify setup and read relevant codebase files (`read`, `glob`, `rg`) before making any changes. Never use `grep` — use `rg` (ripgrep), which is installed and aliased as `rg`.
 - **Minimal Changes**: Make the smallest possible changes required to achieve the goal correctly. Avoid refactoring unrelated code.
 - **Code Style**: Follow the existing style, indentation, naming conventions, and file structure of the codebase.
+- **Email Dashboard Layout**: Any change to `projects/email-triage/static/index.html`, a new triage results view, or a new `QUESTIONS_TAXONOMY` question follows the `email-sorter-ui` skill (shell zones, run bar, distribution cards, drill-through, freshness/spend).
 - **Systematic Fixes**: When fixing bugs — analyze logs and test errors, locate the root cause, apply the fix, then re-run verification.
 - **Overwrite Safety**: Do not write new files unless explicitly requested or strictly necessary. Modify existing ones instead.
 
