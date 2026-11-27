@@ -27,9 +27,17 @@ Companion skills: `wayfinder-runner` (map execution semantics), `code-review`, `
 | Type | Mode | Strategy |
 |------|------|----------|
 | `research` | AFK | spawn research agent; no code → skip code self-review |
-| `task` | AFK or HITL | AFK → coder agent; HITL → Phase 1 with human |
-| `prototype` | HITL | Phase 1 with human |
 | `grilling` | HITL | Phase 1 with human |
+| `prototype` | HITL | Phase 1 with human; opt-in only |
+| `blackbox-test` | AFK | generate black-box tests; code → self-review |
+| `task` | AFK or HITL | AFK → coder agent; HITL → Phase 1 with human |
+| `implementation` | AFK | coder agent builds the feature; code → self-review |
+| `verification` | AFK | find ways to verify the feature; no code → skip review |
+| `council-review` | AFK | convene named council, all rounds; no code → skip review |
+| `proof` | AFK | produce HTML/image/video proof; no code → skip review |
+| `refactor` | AFK | coder agent restructures, no behaviour change; code → self-review |
+
+`prototype` is never created by default. Delivery tickets write artifacts under `docs/wayfinder/<map>/<ticket>/`.
 
 ## Pre-flight (STOP on any failure)
 
@@ -52,7 +60,7 @@ Capture `OWNER/REPO`, `MAP_NUMBER`, `MAP_URL`, `DESTINATION`, `NOTES`.
 Follow `wayfinder-runner` Phase 1 exactly:
 
 1. Load map + child tickets; compute frontier (open, unblocked, unclaimed, topo-sorted).
-2. For each HITL ticket (`prototype`, `grilling`, HITL `task`): claim → collaborate with human (agent assists, never decides) → record resolution comment → close → append to map `## Decisions so far` → recompute frontier. Loop until no HITL remain.
+2. For each HITL ticket (`prototype`, `grilling`, HITL `task`): claim → collaborate with human (agent assists, never decides) → post `## Answer` comment → append the **full answer verbatim** to map `## Decisions so far` under a `### [<ticket name>](link)` heading → close → recompute frontier. Loop until no HITL remain. Never write a one-line gist.
 3. Notify human: Phase 1 complete; AFK tickets remain; hand off to autonomous agents.
 
 **Human decides in Phase 1. Agent never replaces human judgment.**
@@ -61,7 +69,7 @@ Follow `wayfinder-runner` Phase 1 exactly:
 
 ### Threshold decision (re-check on every recompute)
 
-Count open AFK **code-changing** tickets (research tickets that change no code are excluded from the stack count):
+Count open AFK **code-changing** tickets. Excluded from the stack count: `research`, `verification`, `council-review`, `proof`. Code-changing: `implementation`, `refactor`, `blackbox-test`, AFK `task`.
 
 - **< 5 code-changing AFK → Single-PR mode**: implement each ticket, self-review, commit per ticket on one branch, file one PR at the end via `file-pr`.
 - **≥ 5 code-changing AFK → Stacked-PR mode**: one branch + one sub-PR per ticket (base = parent branch), stacked with plain `git`/`gh`.
@@ -76,7 +84,7 @@ gh issue edit <N> --add-assignee @me
 ```
 
 #### B. Dispatch agent
-Build prompt from ticket `## Question`, map `## Decisions so far`, map `## Notes`. Use `general` subagent (one ticket per dispatch — never batch). For research tickets, ask the agent to investigate and post a resolution comment, no code. For task tickets, implement minimal focused changes.
+Build prompt from ticket `## Question`, map `## Decisions so far`, map `## Notes`. Use `general` subagent (one ticket per dispatch — never batch). For research tickets, ask the agent to investigate and post a resolution comment, no code. For task tickets, implement minimal focused changes. For the six delivery types: `blackbox-test` generates tests, `verification` records verification paths, `proof` produces HTML/image/video evidence, `implementation` builds the feature, `council-review` convenes the named council in parallel and loops through all rounds, `refactor` restructures with no behaviour change. Artifacts go under `docs/wayfinder/<map>/<ticket>/` and are linked in the `## Answer` comment.
 
 #### C. Self-review loop (code tickets only; research tickets skip)
 
@@ -92,10 +100,23 @@ Run up to **3 iterations**. Each iteration:
 
 #### D. Record resolution
 ```bash
-gh issue comment <N> --body "<resolution summary>"
+gh issue comment <N> --body "<## Answer with the full resolution>"
+```
+Append the **full answer verbatim** to the map `## Decisions so far`:
+
+```
+### [<ticket name>](link)
+
+<full answer from the ## Answer comment>
+```
+
+Include the sub-PR URL in stacked mode. Only after the write-back is in place, close:
+
+```bash
 gh issue close <N> --reason completed
 ```
-Append to map `## Decisions so far`: `- [<ticket name>](link) — <one-line resolution>` (include sub-PR URL in stacked mode).
+
+Never write a one-line gist. The map is the durable record.
 
 #### E. Commit / file
 

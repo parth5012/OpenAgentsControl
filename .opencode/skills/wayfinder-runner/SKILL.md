@@ -15,12 +15,20 @@ A two-phase agentic loop that drives a wayfinder map to completion. **HITL work 
 ## Ticket types recap (from wayfinder)
 
 
-| Type        | Mode        | Strategy                                           |
-| ----------- | ----------- | -------------------------------------------------- |
-| `research`  | AFK         | spawn research agent                               |
-| `task`      | AFK or HITL | AFK → spawn coder agent; HITL → Phase 1 with human |
-| `prototype` | HITL        | Phase 1 with human                                 |
-| `grilling`  | HITL        | Phase 1 with human                                 |
+| Type              | Mode        | Strategy                                           |
+| ----------------- | ----------- | -------------------------------------------------- |
+| `research`        | AFK         | spawn research agent                               |
+| `grilling`        | HITL        | Phase 1 with human                                 |
+| `prototype`       | HITL        | Phase 1 with human; opt-in only                    |
+| `blackbox-test`   | AFK         | spawn agent to generate black-box tests            |
+| `task`            | AFK or HITL | AFK → spawn coder agent; HITL → Phase 1 with human |
+| `implementation`  | AFK         | spawn coder agent to build the feature             |
+| `verification`    | AFK         | spawn agent to find ways to verify the feature     |
+| `council-review`  | AFK         | convene named council; loops internally all rounds |
+| `proof`           | AFK         | spawn agent to produce HTML/image/video evidence   |
+| `refactor`        | AFK         | spawn coder agent; no behaviour change             |
+
+`prototype` is never created by default; it appears only when explicitly requested. Delivery tickets (`blackbox-test`, `verification`, `proof`, `implementation`, `council-review`, `refactor`) may produce artifacts under `docs/wayfinder/<map>/<ticket>/` and list them in their resolution.
 
 
 ## Two-phase workflow
@@ -76,7 +84,7 @@ input: <map issue number or URL>
 │      review code (if changed) →             │
 │      record resolution → close → recompute  │
 │                                             │
-│    AFK tickets: research, task(AFK)         │
+│    AFK: research, task, + 6 delivery types  │
 │    >=5 code-changing AFK → stacked PRs      │
 │    (git/gh: 1 branch+PR per ticket,         │
 │    babysit each sub-PR bottom-up)           │
@@ -133,6 +141,12 @@ Topo-sort: tickets with no unresolved blockers first.
 Classify each frontier ticket:
 
 - `wayfinder:research` → AFK (skip, Phase 2)
+- `wayfinder:blackbox-test` → AFK (skip, Phase 2)
+- `wayfinder:implementation` → AFK (skip, Phase 2)
+- `wayfinder:verification` → AFK (skip, Phase 2)
+- `wayfinder:council-review` → AFK (skip, Phase 2)
+- `wayfinder:proof` → AFK (skip, Phase 2)
+- `wayfinder:refactor` → AFK (skip, Phase 2)
 - `wayfinder:task` + AFK marker → AFK (skip, Phase 2)
 - `wayfinder:prototype` → HITL (process now)
 - `wayfinder:grilling` → HITL (process now)
@@ -173,15 +187,24 @@ The agent assists — it does **not** replace the human's judgment.
 #### 3c. Record resolution
 
 ```bash
-gh issue comment <N> --body "<resolution — human's decision>"
+gh issue comment <N> --body "<## Answer with the full resolution — human's decision>"
+```
+
+Append the **full answer verbatim** to the map's `## Decisions so far`:
+
+```
+### [<ticket name>](link)
+
+<full answer from the ## Answer comment>
+```
+
+Only after the write-back is in place, close the ticket:
+
+```bash
 gh issue close <N> --reason completed
 ```
 
-Append to map's `## Decisions so far`:
-
-```
-- [<ticket name>](link) — <one-line resolution>
-```
+Never write a one-line gist. The map is the durable record.
 
 #### 3d. Recompute frontier
 
@@ -207,7 +230,7 @@ Now all remaining frontier tickets are AFK. No human needed.
 gh issue list --search "parent:<MAP_NUMBER>" --state open --json number | jq length
 ```
 
-- Count open AFK tickets (research tickets that change no code excluded from stack — they just record resolutions).
+- Count open AFK tickets. Exclude no-code types from the stack count: `research`, `verification`, `council-review`, and `proof` only record resolutions or produce artifacts under `docs/wayfinder/`. Code-changing AFK types are `implementation`, `refactor`, `blackbox-test`, and AFK `task`.
 - **< 5 code-changing AFK tickets → Single-PR mode** (existing flow: implement, commit per ticket on one branch, one PR at the end via `file-pr`).
 - **>= 5 code-changing AFK tickets → Stacked-PR mode** (Section 4g below: one branch + one PR per ticket, stacked with `git`/`gh`, babysit each sub-PR).
 
@@ -271,6 +294,15 @@ Report what you did as a resolution comment. Do NOT close the ticket."
 )
 ```
 
+**For the six delivery types**, use the same prompt shape with the ticket type named and this instruction swapped in:
+
+- `blackbox-test` → "Generate black-box tests for the feature. Write them under `docs/wayfinder/<map>/<ticket>/` and link them in your `## Answer`."
+- `verification` → "Find concrete ways to verify the required feature is implemented. Record the checks and their results in your `## Answer`."
+- `proof` → "Produce HTML artifacts, images, or videos as evidence. Write them under `docs/wayfinder/<map>/<ticket>/` and link them in your `## Answer`."
+- `implementation` → "Build the feature itself. Make minimal, focused changes. Do NOT close the ticket."
+- `council-review` → "Convene the council members listed in the ticket's `council:` field (standing six if empty), all in parallel. Loop internally through as many rounds as needed and record every round's verdict in your `## Answer`."
+- `refactor` → "Restructure the code with no behaviour change. Make minimal, focused changes. Do NOT close the ticket."
+
 #### 4c. Review gate
 
 After the agent returns, check if any source files were modified (`git status`). If yes:
@@ -302,15 +334,24 @@ or report clean."
 #### 4d. Record resolution
 
 ```bash
-gh issue comment <N> --body "<resolution summary from agent>"
+gh issue comment <N> --body "<## Answer with the full resolution from the agent>"
+```
+
+Append the **full answer verbatim** to the map's `## Decisions so far`:
+
+```
+### [<ticket name>](link)
+
+<full answer from the ## Answer comment>
+```
+
+Only after the write-back is in place, close the ticket:
+
+```bash
 gh issue close <N> --reason completed
 ```
 
-Append to map's `## Decisions so far`:
-
-```
-- [<ticket name>](link) — <one-line resolution summary>
-```
+Never write a one-line gist. The map is the durable record.
 
 #### 4e. Create commits for each AFK Ticket (Single-PR mode, < 5 tickets)
 
@@ -351,7 +392,7 @@ Branch naming: `wf/<MAP_NUMBER>-<TICKET_N>-<short-slug>` (e.g. `wf/123-124-auth-
    gh pr create --base <parent-branch> --head <branch> --title "<ticket name> (#<N>)" --body "Closes #<N>. Part of stack for map #<MAP_NUMBER> (<i>/<total>). Parent: #<parent-PR>. Child: <next or none>."
    ```
    Never open a duplicate PR for a branch that already has one — refresh via `gh pr edit` instead.
-5. **Record resolution** (4d): close ticket, append to map's `## Decisions so far`, and include the sub-PR URL in both the ticket close comment and the map line.
+5. **Record resolution** (4d): write the full `## Answer` to the ticket, append it verbatim to the map's `## Decisions so far` under a `### [<ticket name>](link)` heading, include the sub-PR URL in both the ticket close comment and the map entry, then close the ticket.
 6. **Next ticket:** `git checkout -b` next branch off the branch just pushed (stack grows). Repeat.
 
 **Babysit each sub-PR (bottom-up):**

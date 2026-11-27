@@ -20,7 +20,7 @@ For Python package management, always prefer **uv**.
 - **Plan-First**: Break complex, multi-step tasks into clear steps with checkpoints.
 - **Safety Zones**: Do not run destructive commands (such as `rm -rf` or `git reset --hard`) unless strictly verified and explicitly requested.
 - **Attribution**: Only stage and commit files when explicitly asked.
-- **No Blocking Polling Loops**: Never run active terminal polling loops (e.g. `while true; do sleep 5; done`) in foreground shell calls. Use T3 Code watchers (`watch_pull_request`), background tasks (`background: true`), or bounded sleep steps.
+- **No Blocking Polling Loops**: Never run active terminal polling loops (e.g. `while true; do sleep 5; done`) in foreground shell calls. Use T3 Code MCP wait services only — `watch_pull_request` for PRs and `t3_background_wait` with the shell ID for background work. Do not substitute wait services from the RLS (Anti-Gravity, Open Code), and do not use `sleep`, `gh --watch`, Monitor, or ScheduleWakeup as polling mechanisms.
 - **Gradle Daemons & Timeouts**: Always invoke Gradle with `--no-daemon` and bounded timeouts (`timeout: 900000`) to prevent lingering Gradle daemons that lock file handles or exhaust host memory.
 - **Targeted Code Searches**: Prefer `rg` or `explore` over recursive root searches. Always specify paths or file globs to avoid traversal of build artifacts and large caches.
 - **Background Dev Servers**: Whenever spinning up a dev server or long-running process, always run it as a background process (`background: true`) so execution does not get stuck in the thread.
@@ -75,9 +75,20 @@ When an agent that **built** a feature accumulates a huge context (150k–200k t
 - **Driver**: A fresh, cheap, small-context agent that runs the review gate, monitors CI, and answers questions.
 - **Gate rules**: Auto-fix lint/type findings; approve info-only findings; park human decisions verbatim at the end of the task for the orchestrator to relay. End the subagent turn while the gate runs active background processes to avoid orphaned processes.
 
+## T3 MCP — Mandatory for Orchestration & Waiting
+
+T3 Code MCP (`t3-code` tools) is the **only** approved provider for orchestration and wait services. Do **not** use the orchestration services shipped by the RLS — including **Anti-Gravity** and **Open Code** — for any of these operations.
+
+- **Orchestration**: use `delegate_task` (discover providers/models with `orchestrator_capabilities`; run background/async children; track `taskId` / `clientRequestId`) and `t3_thread_launch` for worktree-isolated feature threads. Do not hand the same work to an RLS orchestrator.
+- **Waiting for a pull request**: use `watch_pull_request`. Never `sleep`, `while true` loops, `gh pr checks --watch`, Monitor, or ScheduleWakeup, and never an RLS-provided PR waiter.
+- **Waiting for background work / tool calls**: start long-running shells with `background: true` and wait via `t3_background_wait` using the returned shell ID. Follow a running delegate's `next`; do not poll with `task_status` or manual sleeps, and do not use RLS background-wait helpers.
+- **Scheduling & recurring jobs**: use `schedule_task`. Do not rebuild schedulers in Anti-Gravity or Open Code.
+- **No fallback to RLS orchestration**: if a T3 MCP tool is unavailable, report it and stop rather than switching to an Anti-Gravity or Open Code orchestration service.
+- **No mixed orchestration**: do not run one piece of work through both T3 MCP and an RLS orchestrator. T3 MCP owns delegation, thread/PR state, and all wait operations; in-process OpenCode `subagent` calls are limited to simple, single-step helper work and must never be used for cross-model delegation, isolated worktrees, scheduling, PR watching, or wait state.
+
 ## Subagent Delegation & T3 Code Orchestration
 
-**Orchestrator Mindset**: As the primary agent, your role is lead architect and orchestrator. Never bloat the main context with broad codebase sweeps, massive log outputs, deep iterative research, or repetitive coding churn. Proactively delegate subtasks to **OpenCode Inbuilt Subagents** and **T3 Code Orchestrated Agents**.
+**Orchestrator Mindset**: As the primary agent, your role is lead architect and orchestrator. Never bloat the main context with broad codebase sweeps, massive log outputs, deep iterative research, or repetitive coding churn. Delegate orchestration through **T3 MCP** (`t3-code` tools) per the *T3 MCP — Mandatory for Orchestration & Waiting* rules above; **OpenCode Inbuilt Subagents** are limited to simple in-process helper work.
 
 ### When to Use OpenCode Inbuilt Subagents (`subagent` tool)
 
@@ -248,4 +259,4 @@ When responding, be extremely concise. Sacrifice grammar for the sake of concisi
 # Skills to consider
 - **Always invoke the best practices skill for the language youre working on.**
 - Look for skills that might help in performing the job you've got
-- use visual-findings and html skill to convert long outputs to visuals
+- When running in T3 Code and a reply would exceed ~1,200 chars, include a comparison table, or have >=3 structured sections, render an interactive slot-filled card using `t3-cards` (`html_preview` with height-estimate fallback -> `html_render` as your final tool call) and keep the trailing reply empty or 1 short line.
